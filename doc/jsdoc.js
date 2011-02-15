@@ -1,6 +1,6 @@
-if(!ingenioJS){ var ingenioJS = {}; }
+if(!me){ var me = {}; }
 
-ingenioJS.doc = function(settings){
+me.jsdoc = function(settings){
 
 	this.context = {
 		doc: document.getElementById(settings.doc) || false,
@@ -29,7 +29,7 @@ ingenioJS.doc = function(settings){
 
 };
 
-ingenioJS.doc.prototype = {
+me.jsdoc.prototype = {
 
 	/**
 	 * This internal function simply gets a file using XMLHttpRequest and returns its data

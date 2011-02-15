@@ -119,7 +119,7 @@
 
 	<div id="ui-inspect" class="ui-fieldset">
 		<h3>Inspect Object</h3>
-		<fieldset>
+		<fieldset class="ui-fieldset">
 			<legend>Properties</legend>
 			<p>ID: <input id="ui-inspect-id" class="right" type="text" class="editor-settings"></p>
 			<p>Animation: <input id="ui-inspect-animation" class="right" type="text" class="editor-settings"></p>
@@ -127,7 +127,7 @@
 				<select class="right" id="ui-inspect-model"></select>
 			</p>
 		</fieldset>
-		<fieldset>
+		<fieldset class="ui-fieldset">
 			<legend>Events</legend>
 			<ul id="ui-inspect-events"></ul>
 			<!-- events example (parsed list items)
@@ -201,11 +201,11 @@
 <div class="ui-lightbox" id="ui-export">
 	<article>
 		<h3>Export Level</h3>
-		<fieldset>
+		<fieldset class="ui-fieldset">
 			<legend>The exported level's JSON output</legend>
 			<textarea id="ui-level-export-json"></textarea>
 		</fieldset>
-		<fieldset>
+		<fieldset class="ui-fieldset">
 			<legend>The exported level's level index entry</legend>
 			<textarea id="ui-level-export-levelindex"></textarea>
 		</fieldset>
@@ -217,12 +217,12 @@
 <div class="ui-lightbox" id="ui-settings">
 	<article>
 		<h3>Level Settings</h3>
-		<fieldset>
+		<fieldset class="ui-fieldset">
 			<legend>Level Details</legend>
-			<p>Name: <input id="ui-level-settings-name" name="level.name" class="editor-settings" type="text"></p>
+			<p>Name: <input id="ui-level-settings-name" class="right editor-settings" name="level.name" type="text"></p>
 			<p><small>Level Name should not contain whitespaces. Allowed Charset: [0-9] [a-z]</small></p>
-			<p>Description: <input id="ui-level-settings-description" name="level.description" class="editor-settings" type="text"></p>
-			<p>Size: <input id="ui-level-settings-size-x" name="level.size.x" class="editor-settings" type="number" min="1" value="30"> x <input id="ui-level-settings-size-y" name="level.size.y" type="number" class="editor-settings" min="1" value="30"></p>
+			<p>Description: <input id="ui-level-settings-description" class="right editor-settings" name="level.description" type="text"></p>
+			<p>Size: <input id="ui-level-settings-size-x" class="right editor-settings" name="level.size.x" type="number" min="1" value="30"> x <input id="ui-level-settings-size-y" class="right editor-settings" name="level.size.y" type="number" min="1" value="30"></p>
 		</fieldset>
 		<br>
 		<a href="#!">Close</a>
@@ -232,11 +232,11 @@
 <div class="ui-lightbox" id="ui-quests">
 	<article>
 		<h3>Quest Editor</h3>
-		<fieldset>
+		<fieldset class="ui-fieldset">
 			<legend>Quest 1</legend>
 			<p>...</p>
 		</fieldset>
-		<fieldset>
+		<fieldset class="ui-fieldset">
 			<legend>Quest 2</legend>
 			<p>...</p>
 		</fieldset>

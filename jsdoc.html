@@ -1,11 +1,60 @@
 <!doctype html>
 <html>
 <head>
-	<title>IngenioJS | Documentation Browser</title>
+	<title>IngenioJS | JSDoc Browser</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" href="./game/ui.css">
 
 	<style>
+	#ui-documentation{
+		display:block;
+		position:absolute;
+		top:0px;
+		right:auto;
+		left:auto;
+		bottom:auto;
+		color:#444;
+		overflow:auto;
+	}
+	#ui-documentation.right{
+		width:75%; /* 75 - 2*2 */
+		right:0px;
+		bottom:0px;
+	}
+	#ui-documentation.left{
+		width:75%; /* 75 - 2*2 */
+		left:0px;
+		bottom:0px;
+	}
+
+	#ui-documentation mark{
+		background:yellow;
+		border-radius:0.25em;
+	}
+
+	#ui-documentation article{
+		margin:40px 20px;
+		padding:1em 2em;
+		color:#444;
+		background:white;
+		border-radius:1em 1em 1em 1em;
+	}
+	#ui-documentation article h3{
+		margin:0 0 1em 0;
+		padding:0;
+	}
+
+	#ui-documentation article h4{
+		margin:0;
+		font-size:1em;
+		font-weight:normal;
+		font-style:italic;
+		border-bottom:1px dotted #444;
+	}
+	#ui-documentation article p{
+		margin:0;
+	}
+
 	/* mark private scopes with red background */
 	#ui-documentation article.private{
 		background:#fdd;
@@ -17,9 +66,10 @@
 	#ui-sidebar{
 		overflow:hidden;
 	}
-	#ui-scopes{
+	#ui-sidebar #ui-scopes{
 		position:absolute;
-		bottom:20px;
+		bottom:0px;
+		padding:0;
 		width:99%;
 		height:70%;
 		overflow:hidden;
@@ -29,11 +79,12 @@
 		position:absolute;
 		top:1.8em;
 		width:100%;
-		max-height:99%;
+		max-height:98%;
 		overflow-y:auto;
 		overflow-x:hidden;
 	}
 
+	/* mark private scopes with red color */
 	#ui-sidebar mark{
 		background:transparent;
 	}
@@ -42,6 +93,17 @@
 	#ui-sidebar #ui-scopes-content mark a{
 		color:#933;
 	}
+
+	/* well, give also feedback on hover state */
+	#ui-sidebar #ui-missing-functions mark a:focus,
+	#ui-sidebar #ui-missing-jsdoc mark a:focus,
+	#ui-sidebar #ui-scopes-content mark a:focus,
+	#ui-sidebar #ui-missing-functions mark a:hover,
+	#ui-sidebar #ui-missing-jsdoc mark a:hover,
+	#ui-sidebar #ui-scopes-content mark a:hover{
+		color:#fff;
+	}
+
 	</style>
 </head>
 <body>
@@ -61,11 +123,10 @@
 	</div>
 </aside>
 
-<script src="ingenioJS/doc.js"></script>
+<script src="doc/jsdoc.js"></script>
 <script>
-var doc; // required for showing the todolist as text
 (function(){
-	doc = new ingenioJS.doc({
+	var doc = new me.jsdoc({
 		doc: 'ui-documentation',
 		statistics: 'ui-statistics-content',
 		scopes: 'ui-scopes-content',

@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+	<title>IngenioJS | Documentation</title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="./game/ui.css">
+	<link rel="stylesheet" href="./doc.css">
+
+	<style>
+	#ui-sidebar li{
+		list-style:circle inside;
+	}
+
+	#ui-sidebar #ui-toc>li{
+		margin-top:1em;
+		list-style:none;
+	}
+	#ui-sidebar #ui-toc>li>a{
+		font-style:italic;
+		color:#ccc;
+	}
+
+	#ui-documentation{
+		color:#fff;
+		font-size:2em;
+	}
+	#ui-documentation a{
+		color:#d09030;
+		text-decoration:none;
+	}
+	#ui-documentation a:hover{
+		color:#fff;
+		text-shadow:2px 2px #000;
+	}
+	</style>
+</head>
+<body>
+
+<!-- the context for the documentation browser -->
+<div id="ui-documentation" class="left">
+	This documentation is completely undone.<br>
+	Have a look at the <a href="jsdoc.html">automatic generated JSDoc</a> instead.
+</div>
+
+<!-- the ui / sidebar -->
+<aside id="ui-sidebar" class="right">
+	<div class="ui-fieldset">
+		<h3>Concept</h3>
+		<ul id="ui-toc">
+			<li><a href="#introduction">Introduction</a></li>
+
+			<li>
+				<a href="#data">Data</a>
+				<ul>
+					<li>
+						<a href="#data-level">Level</a>
+						<ul>
+							<li><a href="#data-level-index">Index file</a></li>
+							<li><a href="#data-level-structure">Level structure</a></li>
+							<li><a href="#data-level-quests">Quests file</a></li>
+						</ul>
+					</li>
+
+					<li>
+						<a href="#data-model">Model</a>
+						<ul>
+							<li><a href="#data-model-index">Index file</a></li>
+							<li><a href="#data-model-structure">Model structure</a></li>
+						</ul>
+					</li>
+
+					<li>
+						<a href="#data-object">Object</a>
+						<ul>
+							<li><a href="#data-object-structure">Object structure</a></li>
+							<li><a href="#data-object-composites">Composites</a></li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+
+			<li>
+				<a href="#architecture">Architecture</a>
+				<ul>
+					<li>
+						<a href="#architecture-engine">Engine</a>
+						<ul>
+							<li><a href="#architecture-engine-audio">Audio extension</a></li>
+							<li><a href="#architecture-engine-hitmap">Hitmap extension</a></li>
+						</ul>
+					</li>
+
+					<li><a href="#architecture-controller">Controller</a></li>
+					<li><a href="#architecture-compositor">Compositor</a></li>
+					<li>
+						<a href="#architecture-renderer">Renderer</a>
+						<ul>
+							<li><a href="#architecture-renderer-animation">Animation plugin</a></li>
+						</ul>
+					</li>
+
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<div class="ui-fieldset">
+		<h3>Tutorials</h3>
+		<div id="ui-tutorial-content"></div>
+	</div>
+</aside>
+
+<script src="doc/doc.js"></script>
+<script>
+</script>
+</body>
+</html>
