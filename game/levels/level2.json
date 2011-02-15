@@ -1,0 +1,51 @@
+[{
+	"model": "house-wood",
+	"position": {
+		"x": 40, "y": 10
+	}
+},{
+	"model": "house-stone",
+	"position": {
+		"x": 22, "y": 16
+	}
+},{
+	"model": "conifer",
+	"position": {
+		"x": 36, "y": 12
+	}
+},{
+	"model": "flower",
+	"position": {
+		"x": 40, "y": 15
+	}
+},{
+	"model": "flower",
+	"position": {
+		"x": 42, "y": 16
+	}
+},{
+	"model": "flower",
+	"position": {
+		"x": 44, "y": 15
+	}
+},{
+	"model": "conifer",
+	"position": {
+		"x": 18, "y": 15
+	}
+},{
+	"model": "broadleaf",
+	"position": {
+		"x": 25, "y": 12
+	}
+},{
+	"model": "broadleaf",
+	"position": {
+		"x": 29, "y": 17
+	}
+},{
+	"model": "broadleaf",
+	"position": {
+		"x": 46, "y": 10
+	}
+}]

@@ -1,0 +1,10 @@
+[{
+	"name": "blank",
+	"description": "Editor's initial level",
+	"objects": false,
+	"quests": false,
+	"size": {
+		"x": 30,
+		"y": 30
+	}
+}]

@@ -1,0 +1,274 @@
+[{
+	"name": "debugger",
+	"type": "object",
+	"size": { "x": 2, "y": 2 },
+	"defaultAnimation": "first",
+	"animations": [{
+		"name": "first",
+		"spritemap": 1,
+		"frames": 6,
+		"duration": 6000,
+		"repeat": true
+	},{
+		"name": "second",
+		"spritemap": 2,
+		"frames": 6,
+		"duration": 2000,
+		"repeat": false
+	}],
+	"blocking": true,
+	"image":"debugger.png"
+},
+
+
+
+{
+	"name": "emoboy",
+	"type": "character",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": "wait",
+	"animations": [{
+		"name": "wait",
+		"spritemap": 1,
+		"frames": 4,
+		"duration": 1000,
+		"repeat": true
+	},{
+		"name": "attack",
+		"spritemap": 7,
+		"frames": 10,
+		"duration": 200,
+		"repeat": false
+	}],
+	"blocking": true,
+	"image":"characters/emoboy.png"
+},
+
+
+{
+	"name": "berry-bluk",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/berry-bluk.png"
+},{
+	"name": "berry-durin",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/berry-durin.png"
+},{
+	"name": "berry-honey",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/berry-honey.png"
+},{
+	"name": "berry-pineapple",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/berry-pineapple.png"
+},{
+	"name": "berry-tomato",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/berry-tomato.png"
+},
+
+{
+	"name": "broadleaf",
+	"type": "object",
+	"size": { "x": 2, "y": 2 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/broadleaf.png"
+},{
+	"name": "broadleaf-big",
+	"type": "object",
+	"size": { "x": 3, "y": 3 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/broadleaf-big.png"
+},{
+	"name": "bush",
+	"type": "object",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/bush.png"
+},{
+	"name": "conifer",
+	"type": "object",
+	"size": { "x": 2, "y": 3 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/conifer.png"
+},{
+	"name": "flower-blue",
+	"type": "terrain",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": false,
+	"image":"terrain/flower-blue.png"
+},{
+	"name": "flower-red",
+	"type": "terrain",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": false,
+	"image":"terrain/flower-red.png"
+},{
+	"name": "fossil",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": false,
+	"image":"items/fossil.png"
+},{
+	"name": "hill",
+	"type": "object",
+	"size": { "x": 5, "y": 3 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": false,
+	"image":"objects/hill.png"
+},{
+	"name": "house-stone",
+	"type": "object",
+	"size": { "x": 4, "y": 4 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/house-stone.png"
+},{
+	"name": "house-wood",
+	"type": "object",
+	"size": { "x": 4, "y": 4 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/house-wood.png"
+},{
+	"name": "key",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": false,
+	"image":"items/key.png"
+},{
+	"name": "key-secret",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": false,
+	"image":"items/key-secret.png"
+},{
+	"name": "parcel",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/parcel.png"
+},{
+	"name": "pouch",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/pouch.png"
+},{
+	"name": "sack",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": false,
+	"image":"items/sack.png"
+},{
+	"name": "sign",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/sign.png"
+},{
+	"name": "stone",
+	"type": "object",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/stone.png"
+},{
+	"name": "stone-leaf",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/stone-leaf.png"
+},{
+	"name": "stone-sun",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/stone-sun.png"
+},{
+	"name": "stone-water",
+	"type": "item",
+	"size": { "x": 1, "y": 1 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"items/stone-water.png"
+},{
+	"name": "stones",
+	"type": "object",
+	"size": { "x": 1, "y": 2 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/stones.png"
+},{
+	"name": "syringa",
+	"type": "object",
+	"size": { "x": 1, "y": 2 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/syringa.png"
+},{
+	"name": "syringa-big",
+	"type": "object",
+	"size": { "x": 2, "y": 2 },
+	"defaultAnimation": false,
+	"animations": false,
+	"blocking": true,
+	"image":"objects/syringa-big.png"
+}]

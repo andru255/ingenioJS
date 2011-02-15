@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+	<title>HowTo</title>
+    <meta charset="utf-8" />
+	<script src="howto/howto.js"></script>
+
+	<link rel="stylesheet" href="./game/ui.css">
+<!--	<link rel="stylesheet" href="./howto/howto.css"> -->
+</head>
+<body>
+
+<div id="ui-documentation" class="left">
+	<article>
+		<h3>This is the first article</h3>
+		<h4>Dumdidum function(){}</h4>
+		<p>This is a test paragraph</p>
+		<p>and another one...</p>
+		<p><mark>Test</mark></p>
+	</article>
+</div>
+
+<!-- the ui / sidebar -->
+<aside id="ui-sidebar" class="right">
+	<nav class="ui-menu">
+		<a href="#ui-new">New</a>
+		<small class="note">ingenioJS v0.5</small>
+	</nav>
+	<div id="ui-debug">DEBUGGER</div>
+	<div id="ui-messages"></div>
+</aside>
+
+<script>
+var howto = new me.howto('ui-documentation', {
+	
+});
+</script>
+</body>
+</html>

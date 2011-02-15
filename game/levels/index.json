@@ -1,0 +1,23 @@
+[{
+	"name": "level1",
+	"description": "Welcome and Tutorial",
+	"objects": "level1.json",
+	"quests": "level1.quests.json",
+	"music": {
+		"resource": "forest.mid",
+		"autoplay": "true",
+		"loop": true,
+		"jumpmarks": {
+			"start": "0.00"
+		}
+	},
+	"size": {
+		"x": 50,
+		"y": 40
+	},
+	"jumpmarks": [{
+		"to": "level2",
+		"x": 20,
+		"y": 10
+	}]
+}]

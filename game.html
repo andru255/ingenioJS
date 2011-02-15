@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+<head>
+	<title>IngenioJS | JavaScript RPG Engine</title>
+    <meta charset="utf-8" />
+	<script>if(!ingenioJS){ var ingenioJS = {}; }</script>
+	<script src="ingenioJS/lib/dom.js"></script>
+	<script src="ingenioJS/lib/ajax.js"></script>
+
+	<script src="ingenioJS/cache.js"></script>
+	<script src="ingenioJS/engine.js"></script>
+	<script src="ingenioJS/engine.audio.js"></script>
+	<script src="ingenioJS/engine.hitmap.js"></script>
+	<script src="ingenioJS/engine.hitmap.pathfinder.js"></script>
+	<script src="ingenioJS/engine.controllers.message.js"></script>
+	<script src="ingenioJS/engine.controllers.player.js"></script>
+	<script src="ingenioJS/engine.controllers.quest.js"></script>
+	<script src="ingenioJS/compositor.js"></script>
+	<script src="ingenioJS/renderer.js"></script>
+	<script src="ingenioJS/renderer.animation.js"></script>
+
+	<link rel="stylesheet" href="./game/ui.css">
+
+	<style>
+	/* BEGIN required game engine stuff */
+	#canvas-viewport, #html-viewport{
+		position:relative;
+	}
+	#player{
+		-webkit-transition:100ms all ease;
+		-webkit-transition-property:left, top;
+	}
+	#ninja{
+		-webkit-transition:1s all ease;
+	}
+	/* END required game engine stuff */
+	</style>
+</head>
+<body>
+
+<!-- the html renderer viewport -->
+<div id="html-viewport">
+	<div id="ninja">
+		<div id="ninja-objects"></div>
+		<div id="ninja-terrain"></div>
+	</div>
+</div>
+
+<!-- the ui / sidebar -->
+<aside id="ui-sidebar" class="right">
+	<nav class="ui-menu">
+		<a href="#ui-help">Help</a>
+		<a href="#ui-roadmap">Roadmap</a>
+		<small class="note">ingenioJS v0.5</small>
+	</nav>
+	<div id="ui-debug"></div>
+	<div id="ui-messages"></div>
+</aside>
+
+<div class="ui-lightbox" id="ui-help">
+	<article>
+		<h3>CSS Ninja</h3>
+		<p>
+			This game is an experiment I've done in my free time for developing and understanding
+			game architecture concepts. For now it's just a little dummy world, which will be
+			extended soon with more functionalities.
+		</p>
+		<p>
+			You are invited to <a href="http://twitter.com/martensms">give me feedback</a> for it
+			or to feed me with new ideas =)
+		</p>
+		<h3>Controls</h3>
+		<p>[Q] will attack an object or character</p>
+		<p>[E] will talk to a character</p>
+		<p>[Mouseclick] on the map will shift the player to the position using a pathfinding algorithm</p>
+		<br>
+		<table>
+			<tr>
+				<td style="text-align:center"><button title="Attack" onclick="game.controllers.player.attack()">Q</button></td>
+				<td style="text-align:center"><button onclick="game.controllers.player.move('top')">W</button></td>
+				<td style="text-align:center"><button title="Talk" onclick="game.controllers.player.talk()">E</button></td>
+			</tr>
+			<tr>
+				<td><button onclick="game.controllers.player.move('left')">A</button></td>
+				<td></td>
+				<td><button onclick="game.controllers.player.move('right')">D</button></td>
+			</tr>
+			<tr>
+				<td colspan="3" style="text-align:center"><button onclick="game.controllers.player.move('bottom')">S</button></td>
+			</tr>
+		</table>
+		<h3>Other Stuff</h3>
+		<small>...you can simply ignore it, most things here are for debugging</small>
+		<p>Music: <button onclick="game.music.stop();">Stop</button> <button onclick="game.music.start();">Start</button></p>
+		<br>
+		<a href="#!">Close</a>
+	</article>
+</div>
+
+<div class="ui-lightbox" id="ui-roadmap">
+	<article>
+		<h3>Roadmap</h3>
+		<small>currently worked about 19 hours on this project</small>
+		<ul>
+			<li>Quest Controller
+				<ol>
+					<li>Implement Quest FAILs. Currently, you can't complete Quest-1 if you attack the broadleaf before you speak to it.</li>
+				</ol>
+			</li>
+			<li>Audio Engine Plugin
+				<ol>
+					<li>Create structure on handling multiple streams and channels at once.</li>
+					<li>Implement a Flash-using fallback and feature detection for it</li>
+				</ol>
+			</li>
+			<li>Editor
+				<ol>
+					<li>Improve sprites and character (animation-) spritemaps</li>
+					<li>Implement saving functionality for inspected Object</li>
+					<li>Update exportLevel() with attached events</li>
+					<li>Implement editing functionality for quest logic</li>
+				</ol>
+			</li>
+		</ul>
+		<br>
+		<a href="#!">Close</a>
+	</article>
+</div>
+
+<script>
+// initialize the engine with settings
+var game = new ingenioJS.engine('html-viewport', {
+	context: 'ninja', // game context
+	layers: { // layers, direct children of game context (!)
+		objects: 'ninja-objects',
+		terrain: 'ninja-terrain'
+	},
+	messages: 'ui-messages',
+	models: {
+		index: 'game/models/forest.json',
+		base: 'game/assets/forest',
+	},
+	levels: {
+		index: 'game/levels/index.json',
+		base: 'game/levels'
+	},
+	level: 'level1', // initial level
+	viewport: {
+		x: 30, y: 30 // both pixel-related (123px) or tile-related (12) sizes accepted
+	},
+	squaresize: 16, // pixel-related size, tilesize * squaresize = final rendered size.
+	frames: 30 // 30 frames per second
+});
+
+
+// additional game functionality (which is not included in the engine)
+game.shiftPlayerTo = function(goal){
+
+	if(!goal.x || !goal.y) return;
+
+	var start = this.cache.get('characters', 'player')['position'];
+
+// DONT REMOVE! For testing purposes of my pathfinding algorithm
+//	goal =  {x: start.x + 15, y: start.y + 9};
+//	goal =  {x: start.x + 17, y: start.y + 12};
+//	goal =  {x: start.x + 21, y: start.y + 12};
+//	goal =  {x: start.x + 26, y: start.y + 12};
+
+	var path = new ingenioJS.engine.hitmap.pathfinder(start, goal, this.hitmap, this.currentLevel.size);
+
+	if(path.length){
+		var player = this.cache.get('characters', 'player');
+		player.position.x = (goal.x);
+		player.position.y = (goal.y);
+		this.compositor.execute(player.node.parentNode, player);
+
+		this.drawPath(path);
+	}
+
+	return path; //this.path;
+
+};
+
+game.drawPath = function(todo){
+
+	var flowers = [],
+		context = this.viewport.layers.terrain.context,
+		model = this.cache.get('models', 'flower-red');
+
+	for(var i=0; i<todo.length; i++){
+		flowers.push({
+			position: {
+				x: (todo[i][0]),
+				y: (todo[i][1])
+			},
+			model: model
+		});
+	}
+
+	// call the compositor
+	this.compositor.execute(context, flowers);
+
+};
+
+// TESTING my Pathfinding algorithm.
+game.context.onclick = function(event){
+	var squaresize = game.settings.squaresize;
+	var position = {
+		x: Math.round((event.clientX) / squaresize),
+		y: Math.round((event.clientY) / squaresize)
+	};
+
+	game.shiftPlayerTo(position);
+};
+
+</script>
+</body>
+</html>

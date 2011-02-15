@@ -1,0 +1,285 @@
+<!doctype html>
+<html>
+<head>
+	<title>IngenioJS | JavaScript RPG Engine | Level Editor</title>
+    <meta charset="utf-8" />
+	<script>if(!ingenioJS){ var ingenioJS = {}; }</script>
+	<script src="ingenioJS/lib/dom.js"></script>
+	<script src="ingenioJS/lib/ajax.js"></script>
+
+	<script src="ingenioJS/cache.js"></script>
+	<script src="ingenioJS/engine.js"></script>
+	<script src="ingenioJS/engine.hitmap.js"></script>
+	<script src="ingenioJS/compositor.js"></script>
+	<script src="ingenioJS/renderer.js"></script>
+	<script src="ingenioJS/renderer.animation.js"></script>
+
+	<script src="editor/editor.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="game/ui.css" />
+	<style>
+
+	/* TODO: render this part dynamically */
+	#editor-grid{ background:url(editor/grid16.png); }
+
+
+	#ui-models-character-preview>div,
+	#ui-models-item-preview>div,
+	#ui-models-object-preview>div,
+	#ui-models-terrain-preview>div{
+		display:block;
+		position:relative;
+		margin:5px auto;
+		border:1px solid #909090;
+		cursor:pointer;
+		transition:0.5s background-color ease;
+		-moz-transition:0.5s background-color ease;
+		-o-transition:0.5s background-color ease;
+		-webkit-transition:0.5s background-color ease;
+	}
+
+	#ui-models-character-preview>div:hover,
+	#ui-models-item-preview>div:hover,
+	#ui-models-object-preview>div:hover,
+	#ui-models-terrain-preview>div:hover{
+		background-color:#666;
+	}
+
+	#ui-sidebar{
+		overflow:hidden;
+	}
+
+	#ui-models, #ui-inspect:target{
+		position:absolute;
+		width:100%;
+		top:13em;
+		right:auto;
+		bottom:0px;
+		left:0px;
+		overflow:auto;
+		border-top:1px solid #ccc;
+		background-color:#333;
+	}
+
+	#ui-models{
+		z-index:1;
+	}
+	#ui-inspect{
+		display:none;
+	}
+	#ui-inspect:target{
+		display:block;
+		z-index:2;
+	}
+
+	#viewport{
+		position:absolute;
+		width:70%;
+		height:80%;
+		top:15%;
+		right:5%;
+		bottom:5%;
+		left:30%;
+		overflow:auto;
+	}
+	</style>
+</head>
+<body>
+
+<!-- the html renderer viewport -->
+<div id="viewport">
+	<div id="editor-game">
+		<div id="editor-objects"></div>
+		<div id="editor-grid"><div id="ui-mousehelper"></div></div>
+		<div id="editor-terrain"></div>
+	</div>
+</div>
+
+<!-- the ui / menubar -->
+<nav id="ui-menubar" class="ui-menu">
+	<a href="#!" onclick="editor.newLevel()">New</a>
+	<a href="#ui-import">Import</a>
+	<a href="#ui-export" onclick="editor.exportLevel()">Export</a>
+	<a href="#ui-quests">Quests</a>
+	<a href="#ui-settings">Settings</a>
+</nav>
+
+<!-- the ui / sidebar -->
+<aside id="ui-sidebar" class="left">
+	<div id="ui-debug">
+		<p>Model: <span id="ui-debug-model"></span></p>
+		<p>Size: <span id="ui-debug-mousehelper-size"></span></p>
+		<p>Position: <span id="ui-debug-mousehelper-position"></span></p>
+		<p>Mode: <span id="ui-debug-mode">Build</span></p>
+	</div>
+
+	<div id="ui-controls">
+		<button onclick="editor.switchMode()">switch mode</button>
+	</div>
+
+	<div id="ui-inspect" class="ui-fieldset">
+		<h3>Inspect Object</h3>
+		<fieldset>
+			<legend>Properties</legend>
+			<p>ID: <input id="ui-inspect-id" class="right" type="text" class="editor-settings"></p>
+			<p>Animation: <input id="ui-inspect-animation" class="right" type="text" class="editor-settings"></p>
+			<p>Model:
+				<select class="right" id="ui-inspect-model"></select>
+			</p>
+		</fieldset>
+		<fieldset>
+			<legend>Events</legend>
+			<ul id="ui-inspect-events"></ul>
+			<!-- events example (parsed list items)
+				<li data-type="dialog" data-requires="quest-1" data-message="What's up, dude?">dialog / "What's up, dude?"</li>
+			-->
+			<div id="ui-inspect-events-add">
+				<p>Type: <input id="ui-inspect-events-add-type" class="right" type="text"></p>
+				<p>Message: <input id="ui-inspect-events-add-message" class="right" type="text"></p>
+				<p>Trigger:
+					<select id="ui-inspect-events-add-trigger" class="right">
+						<option value="">-</option>
+						<option value="attack">attack</option>
+						<option value="talk">talk</option>
+					</select>
+				</p>
+				<p>Require:
+					<select id="ui-inspect-events-add-requires" class="right">
+						<option value="">-</option>
+						<option value="quest1">quest1</option>
+						<option value="quest2">quest2</option>
+					</select>
+				</p>
+				<p><button class="right">add Event</button></p>
+			</div>
+		</fieldset>
+	</div>
+
+	<div id="ui-models">
+		<div class="ui-fieldset">
+			<h3>Characters</h3>
+			<div id="ui-models-character-preview"></div>
+		</div>
+
+		<div class="ui-fieldset">
+			<h3>Items</h3>
+			<div id="ui-models-item-preview"></div>
+		</div>
+
+		<div class="ui-fieldset">
+			<h3>Objects</h3>
+			<div id="ui-models-object-preview"></div>
+		</div>
+
+		<div class="ui-fieldset">
+			<h3>Terrain</h3>
+			<div id="ui-models-terrain-preview"></div>
+		</div>
+	</div>
+</aside>
+
+<div class="ui-lightbox" id="ui-import">
+	<article>
+		<h3>Import Level</h3>
+		<fieldset class="ui-fieldset">
+			<legend>Import level from JSON input</legend>
+			<textarea id="ui-level-import-json"></textarea>
+		</fieldset>
+		<fieldset class="ui-fieldset">
+			<legend>Import level from level index</legend>
+			<select id="ui-level-import-levelindex">
+				<option value="level1">level1</option>
+				<option value="level2">level2</option>
+				<option value="level3">level3</option>
+			</select>
+		</fieldset>
+		<br>
+		<a href="#!">Close</a>
+	</article>
+</div>
+
+<div class="ui-lightbox" id="ui-export">
+	<article>
+		<h3>Export Level</h3>
+		<fieldset>
+			<legend>The exported level's JSON output</legend>
+			<textarea id="ui-level-export-json"></textarea>
+		</fieldset>
+		<fieldset>
+			<legend>The exported level's level index entry</legend>
+			<textarea id="ui-level-export-levelindex"></textarea>
+		</fieldset>
+		<br>
+		<a href="#!">Close</a>
+	</article>
+</div>
+
+<div class="ui-lightbox" id="ui-settings">
+	<article>
+		<h3>Level Settings</h3>
+		<fieldset>
+			<legend>Level Details</legend>
+			<p>Name: <input id="ui-level-settings-name" name="level.name" class="editor-settings" type="text"></p>
+			<p><small>Level Name should not contain whitespaces. Allowed Charset: [0-9] [a-z]</small></p>
+			<p>Description: <input id="ui-level-settings-description" name="level.description" class="editor-settings" type="text"></p>
+			<p>Size: <input id="ui-level-settings-size-x" name="level.size.x" class="editor-settings" type="number" min="1" value="30"> x <input id="ui-level-settings-size-y" name="level.size.y" type="number" class="editor-settings" min="1" value="30"></p>
+		</fieldset>
+		<br>
+		<a href="#!">Close</a>
+	</article>
+</div>
+
+<div class="ui-lightbox" id="ui-quests">
+	<article>
+		<h3>Quest Editor</h3>
+		<fieldset>
+			<legend>Quest 1</legend>
+			<p>...</p>
+		</fieldset>
+		<fieldset>
+			<legend>Quest 2</legend>
+			<p>...</p>
+		</fieldset>
+		<br>
+		<a href="#!">Close</a>
+	</article>
+</div>
+
+<script>
+var editor = new me.editor('viewport', {
+	context: 'editor-game',
+	layers: {
+		objects: 'editor-objects',
+		grid: 'editor-grid',
+		terrain: 'editor-terrain'
+	},
+	mousehelper: 'ui-mousehelper',
+	models: {
+		index: 'game/models/forest.json',
+		base: 'game/assets/forest',
+	},
+	levels: {
+//		index: 'editor/levels.json',
+//		base: 'editor/levels'
+		index: 'game/levels/index.json',
+		base: 'game/levels'
+	},
+//	level: 'blank',
+	level: 'level1',
+	modelContainer: {
+		character: 'ui-models-character-preview',
+		item: 'ui-models-item-preview',
+		object: 'ui-models-object-preview',
+		terrain: 'ui-models-terrain-preview'
+	},
+	squaresize: 16 // pixel-related size
+});
+
+
+// initially open the accordion tab with object models
+if(!location.hash){
+	location.hash = '#ui-objects';
+}
+</script>
+</body>
+</html>

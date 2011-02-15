@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+	<title>IngenioJS | Documentation Browser</title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="./game/ui.css">
+
+	<style>
+	/* mark private scopes with red background */
+	#ui-documentation article.private{
+		background:#fdd;
+		-webkit-transition:0.5s background ease;
+	}
+	#ui-documentation article.private:hover{
+		background:#fff;
+	}
+	#ui-sidebar{
+		overflow:hidden;
+	}
+	#ui-scopes{
+		position:absolute;
+		bottom:20px;
+		width:99%;
+		height:70%;
+		overflow:hidden;
+		background:#333;
+	}
+	#ui-scopes-content{
+		position:absolute;
+		top:1.8em;
+		width:100%;
+		max-height:99%;
+		overflow-y:auto;
+		overflow-x:hidden;
+	}
+
+	#ui-sidebar mark{
+		background:transparent;
+	}
+	#ui-sidebar #ui-missing-functions mark a,
+	#ui-sidebar #ui-missing-jsdoc mark a,
+	#ui-sidebar #ui-scopes-content mark a{
+		color:#933;
+	}
+	</style>
+</head>
+<body>
+
+<!-- the context for the documentation browser -->
+<div id="ui-documentation" class="left"></div>
+
+<!-- the ui / sidebar -->
+<aside id="ui-sidebar" class="right">
+	<div class="ui-fieldset">
+		<h3>Statistics</h3>
+		<div id="ui-statistics-content"></div>
+	</div>
+	<div id="ui-scopes" class="ui-fieldset">
+		<h3>Scopes</h3>
+		<div id="ui-scopes-content"></div>
+	</div>
+</aside>
+
+<script src="ingenioJS/doc.js"></script>
+<script>
+var doc; // required for showing the todolist as text
+(function(){
+	doc = new ingenioJS.doc({
+		doc: 'ui-documentation',
+		statistics: 'ui-statistics-content',
+		scopes: 'ui-scopes-content',
+		missing: {
+			docs: 'ui-missing-docs',
+			functions: 'ui-missing-functions',
+		}
+	});
+
+
+	// libraries
+	doc.add('./ingenioJS/lib/ajax.js');
+	// docBrowser.addFile('./ingenioJS/lib/dom.js');	// would just flood everything here with crap
+
+	// cache
+	doc.add('./ingenioJS/cache.js');
+
+	// compositor
+	doc.add('./ingenioJS/compositor.js');
+
+	// engine
+	doc.add('./ingenioJS/engine.js');
+	doc.add('./ingenioJS/engine.audio.js');
+	doc.add('./ingenioJS/engine.hitmap.js');
+	doc.add('./ingenioJS/engine.hitmap.pathfinder.js');
+
+	// engine controllers
+	doc.add('./ingenioJS/engine.controllers.message.js');
+	doc.add('./ingenioJS/engine.controllers.player.js');
+	doc.add('./ingenioJS/engine.controllers.quest.js');
+
+	// renderer
+	doc.add('./ingenioJS/renderer.js');
+	doc.add('./ingenioJS/renderer.animation.js');
+
+	// append the html to the DOM
+	doc.init();
+
+})();
+</script>
+</body>
+</html>

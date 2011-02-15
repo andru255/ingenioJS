@@ -1,0 +1,30 @@
+[{
+	"name": "quest-1",
+	"description": "Talk to the living broadleaf. Then talk to the debugger and attack this idiot.",
+	"success": [{
+		"type": "action",
+		"focus": "living-broadleaf",
+		"action": "talk"
+	},{
+		"type": "action",
+		"focus": "debugger",
+		"action": "talk"
+	},{
+		"type": "action",
+		"focus": "debugger",
+		"action": "attack"
+	}],
+	"fail": [{
+		"type": "action",
+		"focus": "debugger",
+		"action": "attack"
+	}]
+},{
+	"name": "quest-2",
+	"description": "Destroy conifer in the NINJA.",
+	"success": [{
+		"type": "action",
+		"focus": "conifer-in-ninja",
+		"action": "attack"
+	}]
+}]

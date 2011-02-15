@@ -1,0 +1,48 @@
+ingenioJS - JavaScript RPG Engine
+
+ingenioJS by Christoph Martens (http://martens.ms) is released under a
+Creative Commons Attribution-NonCommercial 3.0 Germany License
+http://creativecommons.org/licenses/by-nc/3.0/de/
+
+
+
+--------------------------------------
+Introduction:
+
+ingenioJS is a JavaScript / HTML5 game engine. Its structure allows independent rendering methods, such as WebGL, Canvas or DOM Elements.
+By default it makes usage of DOM Elements and a 2D environment to realize an example tile-based game called "CSS Ninja".
+
+A live demo (which will be almost up-to-date) is available at the following URL:
+http://ninja.martens.ms/game.html
+
+This JavaScript engine seriously targets professional audience.
+If you have questions or any kind of suggestion, you are pleased to contact me anytime. I prefer using twitter, my twitter account is @martensms
+
+
+--------------------------------------
+Engine Structure:
+
+cache -> The cache is accessible from any other component. It is the storage for characters, objects, animated objects, models and other stuff.
+
+engine -> The engine manages all logical levels. It will decide when a gameplay logical event (e.g. an attack or destruction) will influence the compositing of the object. It also is the executor of loading objects, models and all other assets.
+
+compositor -> The compositor translates our tile-grid to a "real-world-grid". That would be in a 2D environment pixels. A 2.5D environment would require a zIndex of the positioned elements and isometric transformation (which will be also hooked up at the 2.5d compositor). A 3D enviroment would require a complete z-axis on all rendered objects. The compositor also decides when the renderer is called and that will only be if the composite is dirty.
+
+renderer -> The renderer is the one that manages the viewport and the rendering of objects. Currently it uses DOM elements for rendering. The technology used for rendering is completely independent of the compositing. The renderer could also use canvas, WebGL or other technologies to render the objects on the screen.
+
+
+--------------------------------------
+Engine Controllers vs. Engine Plugins
+
+Engine Plugins (such as ingenioJS.engine.audio is) are able to be used without the complete engine structure. They are almost low level components that don't require e.g. a compositor or renderer.
+
+Engine Controllers (such as ingenioJS.controllers.player) are only able to be used when the underlying engine structure is given. They will require e.g. the compositing structure or the object / model structure to work.
+
+
+--------------------------------------
+Engine Setup and Usage:
+(soon documented)
+
+--------------------------------------
+Examples / Tutorials:
+(soon documented)
