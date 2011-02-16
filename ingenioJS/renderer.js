@@ -1,7 +1,6 @@
 
 /**
- * @namespace Renderer (HTML), which manages all graphics and the viewport
- * @constructor This will create and return a renderer instance.
+ * @constructor Renderer (HTML), which manages all graphics and the viewport
  * @param {Object} viewport The required viewport object managed by the engine
  * @param {Object} settings The required settings object managed by the engine
  * @param {Object} cache The cache instance managed by the engine
@@ -339,7 +338,7 @@ ingenioJS.renderer.prototype = {
 		if(!this.layerHolder || !this.layerSize){
 			// find the layer holder
 			for(var l in layers){
-				if(layers.hasOwnProperty(l) && layer[l].context){
+				if(layers.hasOwnProperty(l) && layers[l].context){
 					layerHolder = this.layerHolder = layers[l].context.parentNode;
 					layerSize = this.layerSize = layers[l].size;
 					break;

@@ -1,8 +1,7 @@
 if(!ingenioJS.renderer.plugins){ ingenioJS.renderer.plugins = {}; }
 
 /**
- * @namespace Renderer (HTML) / Animation Plugin (allows CSS3 or JavaScript animated objects)
- * @constructor This will create and return a renderer animation plugin instance.
+ * @constructor Renderer (HTML) / Animation Plugin (allows CSS3 or JavaScript animated objects)
  * @param {Object} owner The owning renderer instance
  * @returns {Object} renderer plugin instance
  */

@@ -1,8 +1,7 @@
 if(!ingenioJS.engine.controllers){ ingenioJS.engine.controllers = {}; }
 
 /**
- * @namespace Player Controller (allows a controllable character object)
- * @constructor This will create and return a controller instance.
+ * @constructor Player Controller (allows a controllable character object)
  * @param {Object} engine The owning engine instance
  * @param {Boolean} [listen] True will cause the controller to listen on keyboard events.
  * @returns {Object} controller instance
@@ -90,7 +89,7 @@ ingenioJS.engine.controllers.player.prototype = {
 				var object = objects[o],
 					model = object.model;
 
-				// fill our eventmap
+				// object has local events
 				if(object.events){
 					for(var x=object.position.x; x<(object.position.x + model.size.x); x++){
 						for(var y=object.position.y; y<(object.position.y + model.size.y); y++){
@@ -98,6 +97,10 @@ ingenioJS.engine.controllers.player.prototype = {
 							this._eventmap[x+'x'+y] = o;
 						}
 					}
+
+				// object is an item
+				}else if(object.model && object.model.type == 'item'){
+					this._eventmap[x+'x'+y] = o;
 				}
 
 				// fill our victimmap (objects that can be removed / destroyed)
@@ -129,8 +132,8 @@ ingenioJS.engine.controllers.player.prototype = {
 			case 81: // Q attack
 				this.attack(this.direction || false);
 				break;
-			case 69: // E talk
-				this.talk(this.direction || false);
+			case 69: // E interact (talk, collect)
+				this.interact(this.direction || false);
 				break;
 			case 87: // W walk top
 				this.move('top');
@@ -206,11 +209,11 @@ ingenioJS.engine.controllers.player.prototype = {
 	},
 
 	/**
-	 * This function will let the player talk to a targeted object (which is a dialog event). To determine which object
-	 * is talked to, it will lookup in the local eventmap for the referenced object.
+	 * This function will let the player interact to a targeted object (talk on attached dialog event, collect on item objects).
+	 * To determine which object is interacted with, it will lookup in the local eventmap for the referenced object.
 	 * @param {String} direction The targeted direction, which is top, right, bottom or left.
 	 */
-	talk: function(direction){
+	interact: function(direction){
 
 		if(!this.initialized){
 			this.init();
@@ -224,19 +227,32 @@ ingenioJS.engine.controllers.player.prototype = {
 
 		if(target){
 			target = this.cache.get('objects', target) || this.cache.get('characters', target);
-			if(!target || !target.events) return;
 
-			var eventId = target.eventId || 0;
-			if(!target.events[eventId]){
-				eventId = target.eventId = 0;
+			if(target && target.events){
+				var eventId = target.eventId || 0;
+				if(!target.events[eventId]){
+					eventId = target.eventId = 0;
+				}
+
+				// dialog event
+				if(target.events[eventId] && target.events[eventId].type == 'dialog'){
+					// show notification
+					this.engine.controllers.message && this.engine.controllers.message.execute(target.name || target.id, target.events[eventId].message);
+
+					// next event in object's eventmap
+					target.eventId = eventId + 1;
+				}
+
+			// collect event
+			}else if(target.model && target.model.type == 'item'){
+
+				// the item controller requires only the model
+				this.engine.controllers.item && this.engine.controllers.item.execute(target.model);
+
+				// remove the object now
+				this.engine.removeObject(target);
 			}
 
-			if(target.events[eventId] && target.events[eventId].type=='dialog'){
-				this.engine.controllers.message && this.engine.controllers.message.execute(target.name || target.id, target.events[eventId].message);
-
-				// next event in object's eventmap
-				target.eventId = eventId + 1;
-			}
 		}
 
 	},
@@ -308,8 +324,11 @@ ingenioJS.engine.controllers.player.prototype = {
 
 		// update the position if changed
 		if(this.player.position.x != newPosition.x || this.player.position.y != newPosition.y){
+
+			this.player.composite = 'update';
 			this.player.position = newPosition;
 			this.engine.compositor.execute(this.context, this.player);
+
 			return true;
 		}
 

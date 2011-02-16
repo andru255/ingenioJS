@@ -1,7 +1,6 @@
 
 /**
- * @namespace Engine, which manages all game logic
- * @constructor This will create and return an engine instance.
+ * @constructor Engine, which manages all game logic
  * @param {String|DOMElement} viewport The required viewport DOM Element Id
  * @param {Object} settings The required settings object that will be merged with defaults
  * @returns {Object} engine instance

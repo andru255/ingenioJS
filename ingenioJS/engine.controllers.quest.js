@@ -1,8 +1,7 @@
 if(!ingenioJS.engine.controllers){ ingenioJS.engine.controllers = {}; }
 
 /**
- * @namespace Quest Controller (offers quest interaction and centralized questmap structure)
- * @constructor This will create and return a controller instance.
+ * @constructor Quest Controller (offers quest interaction and centralized questmap structure)
  * @param {Object} engine The owning engine instance
  * @returns {Object} controller instance
  */
@@ -76,13 +75,13 @@ ingenioJS.engine.controllers.quest.prototype = {
 			}
 		})(player.attack);
 
-		player.talk = (function(old){
+		player.interact = (function(old){
 			return function(){
-				self.update.call(self, 'talk', arguments[0]);
+				self.update.call(self, 'interact', arguments[0]);
 				// call the original player's attack function
 				if(old){ old.apply(player, arguments); }
 			}
-		})(player.talk);
+		})(player.interact);
 
 	},
 

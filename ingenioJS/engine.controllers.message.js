@@ -1,8 +1,7 @@
 if(!ingenioJS.engine.controllers){ ingenioJS.engine.controllers = {}; }
 
 /**
- * @namespace Message Controller (offers simplified messaging service)
- * @constructor This will create and return a controller instance.
+ * @constructor Message Controller (offers simplified messaging service)
  * @param {Object} engine The owning engine instance
  * @returns {Object} controller instance
  */

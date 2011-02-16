@@ -1,7 +1,6 @@
 
 /**
- * @namespace Compositor, which manages 2D tile- or pixel-based positioning
- * @constructor This will create and return a compositor instance.
+ * @constructor Compositor, which manages 2D tile- or pixel-based positioning
  * @param {Object} viewport The required viewport object managed by the engine
  * @param {Object} settings The required settings object managed by the engine
  * @returns {Object} compositor instance
@@ -104,11 +103,10 @@ ingenioJS.compositor.prototype = {
 			object.left = (object.position.x * set.squaresize)+'px';
 			object.top = (object.position.y * set.squaresize)+'px';
 
-			if(object.node && !object.composite){
-				updateObjects.push(object);
-			}else if(!object.composite){
+
+			if(!object.composite || object.composite == 'execute'){
 				executeObjects.push(object);
-			}else if(object.composite == 'update'){
+			}else if(object.composite == 'update' || (object.node && !object.composite)){ // will update if composite was forgotten and object's node is attached
 				updateObjects.push(object);
 			}else if(object.composite == 'remove'){
 				removeObjects.push(object);

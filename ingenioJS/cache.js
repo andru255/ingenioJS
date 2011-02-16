@@ -1,7 +1,6 @@
 
 /**
- * @namespace Cache, which manages all data stacks and their entries
- * @constructor This will create and return a cache instance.
+ * @constructor Cache, which manages all data stacks and their entries
  * @returns {Object} cache instance
  */
 ingenioJS.cache = function(){

@@ -1,7 +1,6 @@
 
 /**
- * @namespace Engine / Hitmap / Pathfinder Plugin (allows finding path(s) from A to B)
- * @constructor This will create a pathfinder instance and return a resulting path.
+ * @constructor Engine / Hitmap / Pathfinder Plugin (allows finding path(s) from A to B)
  * @param {Object} start The start point in {x, y} format
  * @param {Object} goal The goal point in {x, y} format
  * @param {Object} hitmap The hitmap

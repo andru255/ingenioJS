@@ -36,6 +36,12 @@
 	}]
 },
 
+{
+	"model": "stone-water",
+	"position": {
+		"x": 4, "y": 15
+	}
+},
 
 
 {

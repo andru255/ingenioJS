@@ -4,11 +4,11 @@
 	"success": [{
 		"type": "action",
 		"focus": "living-broadleaf",
-		"action": "talk"
+		"action": "interact"
 	},{
 		"type": "action",
 		"focus": "debugger",
-		"action": "talk"
+		"action": "interact"
 	},{
 		"type": "action",
 		"focus": "debugger",

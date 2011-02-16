@@ -1,7 +1,6 @@
 
 /**
- * @namespace Controller / Audio Plugin (allows playback and controls of audio and music)
- * @constructor This will create and return a controller audio plugin instance.
+ * @constructor Engine / Audio Controller (allows playback and controls of audio and music)
  * @param {Object} controller The owning controller instance
  * @returns {Object} controller plugin instance
  * @todo Improve audio engine with multi-channel and multi-stream functionalities; Improve also a flash-using fallback

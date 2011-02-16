@@ -1,7 +1,6 @@
 
 /**
- * @namespace Engine / Hitmap Extension (allows blocking objects)
- * @constructor This will create and return a hitmap instance.
+ * @constructor Engine / Hitmap Extension (allows blocking objects)
  * @param {Array} objects The objects that will be merged in hitmap entries
  * @param {Object} engine The owning engine instance
  * @returns {Object} hitmap instance
