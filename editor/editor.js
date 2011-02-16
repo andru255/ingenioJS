@@ -371,10 +371,41 @@ me.editor.prototype = {
 
 	updateObject: function(){
 
-		//this._inspectedObject.model = 'emoboy';
-		//console.log('updateObject called with', this._inspectedObject);
-		//this.engine.updateObject(this._inspectedObject);
+		if(this._inspectedObject && this._inspectedObjectUI){
 
+			if(this._inspectedObjectUI.id.value != ''){
+				this._inspectedObject.id = this._inspectedObjectUI.id.value;
+			}
+
+			if(typeof this._inspectedObjectUI.model.selectedIndex == 'number'){
+				var model = this._inspectedObjectUI.model.childNodes[this._inspectedObjectUI.model.selectedIndex].value || false;
+
+				// remove object if no model was selected
+				if(!model || model == '-'){
+					this._inspectedObject.composite = 'remove';
+				}else{
+					this._inspectedObject.composite = 'update';
+					this._inspectedObject.model = model;
+				}
+
+			}
+
+			if(this._inspectedObjectUI.animation.value){
+				this._inspectedObject.animation = this._inspectedObjectUI.animation.value;
+			}
+
+			if(this._inspectedObject.composite == 'remove'){
+				this.engine.removeObject(this._inspectedObject);
+			}else{
+				this.engine.updateObject(this._inspectedObject);
+			}
+
+		}
+
+		// hide the inspect frame now
+		if(window.location.hash == '#ui-inspect'){
+			window.location.hash = '!';
+		}
 	},
 
 	switchMode: function(){
@@ -429,30 +460,3 @@ me.editor.prototype = {
 	}
 
 }
-
-
-
-/*
-
-ingenioJS.editor.prototype = {
-
-	updateLevelSize: function(){
-
-		var viewport = this.viewport;
-
-		var size = {
-			x: document.getElementById('level-sizex').value,
-			y: document.getElementById('level-sizey').value
-		};
-
-		for(var i in viewport.layers){
-			viewport.layers[i].size = size;
-		}
-
-		this.compositor.updateLayers();
-		this.renderer.updateLayers();
-
-	},
-
-}
-*/

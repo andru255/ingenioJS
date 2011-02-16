@@ -91,6 +91,17 @@ ingenioJS.renderer.plugins.animation.prototype = {
 	 */
 	update: function(context, todo){
 
+		if(!todo) return;
+		// this is just for direct use cases, if an object's composite has changed
+		// It will delegate it to stopAnimation()
+		if(todo && todo.length){
+			for(var i=0; i<todo.length; i++){
+				if(todo[i].composite == 'update'){
+					this.updateAnimation(todo[i]);
+				}
+			}
+		}
+
 		if(this._cssCache.animation){
 
 			return;
@@ -261,6 +272,24 @@ ingenioJS.renderer.plugins.animation.prototype = {
 		}else if(this._weirdJavaScript){
 			object.animation = animation;
 			this._animatedObjects.push(object);
+		}
+
+	},
+
+
+	/**
+	 * This function updates an animation on the given object. Delegated to by update() cycle if an object's composite was updated.
+	 * It will stop the old animation and start the given one, if a new animation was attached to the object.
+	 * @param {Object} object The object which will be updated.
+	 */
+	updateAnimation: function(object){
+
+		var animation = object.animation ? object.animation+'' : false; // prevents linking
+
+		this.stopAnimation(object);
+
+		if(animation){
+			this.startAnimation(object, animation);
 		}
 
 	},

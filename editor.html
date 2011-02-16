@@ -72,6 +72,11 @@
 		z-index:2;
 	}
 
+	#ui-sidebar .ui-controls{
+		border-top:3px solid #ccc;
+		padding:0.25em 1em;
+	}
+
 	#viewport{
 		position:absolute;
 		width:70%;
@@ -153,6 +158,9 @@
 				<p><button class="right">add Event</button></p>
 			</div>
 		</fieldset>
+		<div class="ui-controls">
+		<button onclick="editor.updateObject()" class="right">Apply to inspected Object</button>
+		</div>
 	</div>
 
 	<div id="ui-models">
