@@ -20,6 +20,7 @@ ingenioJS.engine.controllers.item.prototype = {
 	 * This function will be executed anytime the item controller is called.
 	 * It will then handle the model of the item depending on the player's bag size
 	 * @param {Object|String} model The item model (name or model structure)
+	 * @todo Implement bonus-structure for models and invent a bonus system for upgrading the player
 	 */
 	execute: function(model){
 
