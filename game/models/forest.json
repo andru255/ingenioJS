@@ -3,19 +3,20 @@
 	"type": "object",
 	"size": { "x": 2, "y": 2 },
 	"defaultAnimation": "first",
-	"animations": [{
-		"name": "first",
-		"spritemap": 1,
-		"frames": 6,
-		"duration": 6000,
-		"repeat": true
-	},{
-		"name": "second",
-		"spritemap": 2,
-		"frames": 6,
-		"duration": 2000,
-		"repeat": false
-	}],
+	"animations": {
+		"first": {
+			"spritemap": 1,
+			"frames": 6,
+			"duration": 6000,
+			"repeat": true
+		},
+		"second": {
+			"spritemap": 2,
+			"frames": 6,
+			"duration": 2000,
+			"repeat": false
+		}
+	},
 	"blocking": true,
 	"image":"debugger.png"
 },
@@ -27,19 +28,20 @@
 	"type": "character",
 	"size": { "x": 1, "y": 1 },
 	"defaultAnimation": "wait",
-	"animations": [{
-		"name": "wait",
-		"spritemap": 1,
-		"frames": 4,
-		"duration": 1000,
-		"repeat": true
-	},{
-		"name": "attack",
-		"spritemap": 7,
-		"frames": 10,
-		"duration": 200,
-		"repeat": false
-	}],
+	"animations": {
+		"wait": {
+			"spritemap": 1,
+			"frames": 4,
+			"duration": 1000,
+			"repeat": true
+		},
+		"attack": {
+			"spritemap": 7,
+			"frames": 10,
+			"duration": 200,
+			"repeat": false
+		}
+	},
 	"blocking": true,
 	"image":"characters/emoboy.png"
 },

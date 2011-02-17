@@ -169,6 +169,11 @@ ingenioJS.renderer.prototype = {
 				object.node = element;
 			}
 
+			// cleanup composite
+			if(object.composite){
+				object.composite = false;
+			}
+
 		}
 
 		return true;
@@ -207,6 +212,11 @@ ingenioJS.renderer.prototype = {
 				if(object.model && object.composite == 'update'){
 					object.node.className = classNameSpace+' '+((object.model.type) ? object.model.type : '')+((object.model.name) ? ' '+object.model.name : '');
 				}
+			}
+
+			// cleanup composite
+			if(object.composite){
+				delete object.composite;
 			}
 		}
 
