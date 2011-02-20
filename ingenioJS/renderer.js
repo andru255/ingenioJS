@@ -112,10 +112,9 @@ ingenioJS.renderer.prototype = {
 			return prop.toLowerCase();
 		}else{
 			// test vendor support
-			for(var i in vendors){
-				if(this.csstester.style[vendors[i]+v_prop] !== undefined){
-					return '-'+vendors[i].toLowerCase()+'-'+prop;
-					break;
+			for(var v in vendors){
+				if(this.csstester.style[vendors[v]+v_prop] !== undefined){
+					return '-'+vendors[v].toLowerCase()+'-'+prop;
 				}
 			}
 		}
@@ -339,7 +338,7 @@ ingenioJS.renderer.prototype = {
 		var viewport = this.viewport,
 			viewportSize = viewport.size,
 			layers = this.viewport.layers,
-			settings = this.settings
+			settings = this.settings,
 			css = this._cssCache,
 			sheet = '';
 
@@ -414,4 +413,4 @@ ingenioJS.renderer.prototype = {
 		return !!(stylesheet.innerHTML += sheet);
 
 	}
-}
+};

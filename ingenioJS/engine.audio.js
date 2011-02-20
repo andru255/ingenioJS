@@ -21,10 +21,10 @@ ingenioJS.engine.audio = function(settings){
 		this.settings = {};
 		// overwrite defaults
 		for(var i=0; i<settings.length; i++){
-			for(var s in settings[i]){
-				if(settings[i].hasOwnProperty(s)){
+			for(var d in settings[i]){
+				if(settings[i].hasOwnProperty(d)){
 					this.settings[i] = this.defaults;
-					this.settings[i][s] = settings[s];
+					this.settings[i][d] = settings[d];
 				}
 			}
 		}
@@ -48,7 +48,7 @@ ingenioJS.engine.audio = function(settings){
 		return this.stream;
 	}
 
-}
+};
 
 ingenioJS.engine.audio.prototype = {
 
@@ -72,7 +72,6 @@ ingenioJS.engine.audio.prototype = {
 
 		// find out which method we use for playing the stream. embed or html5 audio?
 		switch(ext){
-			default: // default is using a plugin!
 			case "mid":
 			case "midi":
 				set.type = 'embed';
@@ -80,6 +79,9 @@ ingenioJS.engine.audio.prototype = {
 			case "mp3":
 			case "ogg":
 				set.type = 'html5';
+			break;
+			default: // default is using a plugin!
+				set.type = 'embed';
 			break;
 		}
 
@@ -111,11 +113,7 @@ ingenioJS.engine.audio.prototype = {
 			stream.context.src = set.resource;
 			stream.context.setAttribute('class', 'audio-stream');
 
-			var ext = set.resource.split('.'),
-				mime = '';
-
-			// find out the extension
-			ext = ext[ext.length - 1];
+			var mime = '';
 
 			// set the corresponding mime-type
 			switch(ext){

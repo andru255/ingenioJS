@@ -34,7 +34,7 @@ ingenioJS.engine = function(viewport, settings){
 		}
 	}
 
-	var settings = this.settings;
+	settings = this.settings;
 	if(!this.context){
 		this.context = document.getElementById(settings.context);
 	}
@@ -256,9 +256,6 @@ ingenioJS.engine.prototype = {
 
 			// sorting the objects into targeted layers (in game world)
 			switch(objects[i].model.type){
-				default:
-					continue;
-					break;
 				case 'character':
 					this.cache.set('characters', objects[i].id || 'character-'+(sorted.characters.length + 1), objects[i]);
 					sorted.characters.push(objects[i]);
@@ -271,6 +268,8 @@ ingenioJS.engine.prototype = {
 				case 'terrain':
 					// terrain won't be cached. Is not necessary for interaction purposes
 					sorted.terrain.push(objects[i]);
+					break;
+				default:
 					break;
 			}
 		}
@@ -340,6 +339,7 @@ ingenioJS.engine.prototype = {
 
 	/**
 	 * This function will flag the object to be removed and call the compositor. Also the hitmap will be cleaned up afterwards.
+	 * @todo move the function removeLevelmapEntry to a namespace or so...
 	 */
 	removeObject: function(object){
 
@@ -356,7 +356,7 @@ ingenioJS.engine.prototype = {
 				array.push.apply(array, part2);
 
 				return array;
-			};
+			}
 
 			var removeId = false;
 			for(var i=0; i<this.levelmap.length; i++){
@@ -377,4 +377,4 @@ ingenioJS.engine.prototype = {
 
 	}
 
-}
+};

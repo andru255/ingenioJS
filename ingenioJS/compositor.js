@@ -126,4 +126,4 @@ ingenioJS.compositor.prototype = {
 
 	}
 
-}
+};

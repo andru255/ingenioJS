@@ -1,4 +1,3 @@
-if(!ingenioJS.renderer.plugins){ ingenioJS.renderer.plugins = {}; }
 
 /**
  * @constructor Renderer (HTML) / Animation Plugin (allows CSS3 or JavaScript animated objects)
@@ -42,7 +41,7 @@ ingenioJS.renderer.plugins.animation.prototype = {
 				// plugins requires generated node
 				self.execute.apply(self, arguments);
 
-			}
+			};
 		})(owner.execute);
 
 		// update is partial rendering
@@ -53,7 +52,7 @@ ingenioJS.renderer.plugins.animation.prototype = {
 
 				// call the renderer's update function
 				if(old){ old.apply(owner, arguments); }
-			}
+			};
 		})(owner.update);
 
 	},
@@ -98,9 +97,9 @@ ingenioJS.renderer.plugins.animation.prototype = {
 				todo = [ todo ];
 			}
 
-			for(var i=0; i<todo.length; i++){
-				if(todo[i].composite == 'update'){
-					this.updateAnimation(todo[i]);
+			for(var t=0; t<todo.length; t++){
+				if(todo[t].composite == 'update'){
+					this.updateAnimation(todo[t]);
 				}
 			}
 		}
@@ -200,7 +199,7 @@ ingenioJS.renderer.plugins.animation.prototype = {
 			array.push.apply(array, part2);
 
 			return array;
-		};
+		}
 
 		for(var i=0; i<todo.length; i++){
 			var removeId = todo[i];

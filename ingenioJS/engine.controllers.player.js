@@ -268,33 +268,52 @@ ingenioJS.engine.controllers.player.prototype = {
 			this.init();
 		}
 
+/*
+		if(this.direction == direction){
+			this.velocity = this.velocity + 0.1;
+			if(this.velocity > 1.0){
+				this.velocity = 1.0;
+			}
+		}else if(this.velocity > 0.3){
+			this.velocity = this.velocity - 0.1;
+		}else{
+			this.velocity = 0.2;
+		}
+
+		if(this.direction != direction){
+			this.velocity = 0.2;
+		}
+*/
+
 		var newPosition = {
 			x: this.player.position.x,
 			y: this.player.position.y
 		};
 
+		var next = 1; // well, arghs
+
 		switch(direction){
 			case 'top':
-				if(!this.engine.hitmap.get(newPosition.x, newPosition.y - 1)){
-					newPosition.y--;
+				if(!this.engine.hitmap.get(Math.round(newPosition.x), Math.round(newPosition.y - next))){
+					newPosition.y = newPosition.y - next;
 					this.direction = 'top';
 				}
 			break;
 			case 'right':
-				if(!this.engine.hitmap.get(newPosition.x + 1, newPosition.y)){
-					newPosition.x++;
+				if(!this.engine.hitmap.get(Math.round(newPosition.x + next), Math.round(newPosition.y))){
+					newPosition.x = newPosition.x + next;
 					this.direction = 'right';
 				}
 			break;
 			case 'bottom':
-				if(!this.engine.hitmap.get(newPosition.x, newPosition.y + 1)){
-					newPosition.y++;
+				if(!this.engine.hitmap.get(Math.round(newPosition.x), Math.round(newPosition.y + next))){
+					newPosition.y = newPosition.y + next;
 					this.direction = 'bottom';
 				}
 			break;
 			case 'left':
-				if(!this.engine.hitmap.get(newPosition.x - 1, newPosition.y)){
-					newPosition.x--;
+				if(!this.engine.hitmap.get(Math.round(newPosition.x - next), Math.round(newPosition.y))){
+					newPosition.x = newPosition.x - next;
 					this.direction = 'left';
 				}
 			break;

@@ -90,9 +90,9 @@ ingenioJS.cache.prototype = {
 	 */
 	getSize: function(stack){
 
-		var length = 0,
-			stack = this[stack] || {};
+		var length = 0;
 
+		stack = this[stack] || {};
 		for(var i in stack){
 			length++;
 		}
