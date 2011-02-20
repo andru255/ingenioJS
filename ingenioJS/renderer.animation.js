@@ -1,3 +1,4 @@
+if(!ingenioJS.renderer.plugins){ ingenioJS.renderer.plugins = {}; }
 
 /**
  * @constructor Renderer (HTML) / Animation Plugin (allows CSS3 or JavaScript animated objects)
@@ -21,6 +22,7 @@ ingenioJS.renderer.plugins.animation = function(owner){
 	this._currify();
 
 	return this;
+
 };
 
 ingenioJS.renderer.plugins.animation.prototype = {
