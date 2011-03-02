@@ -104,7 +104,7 @@ ingenioJS.engine.prototype = {
 
 		// fetch model index
 		if(settings.models && settings.models.base && settings.models.index){
-			ingenioJS.ajax(settings.models.index,function(data){
+			iJS.ajax(settings.models.index,function(data){
 				var models = JSON.parse(data) || false;
 				if(models && models.length){
 					for(var m=0;m<models.length;m++){
@@ -117,7 +117,7 @@ ingenioJS.engine.prototype = {
 
 		// fetch level index
 		if(settings.levels && settings.levels.base && settings.levels.index){
-			ingenioJS.ajax(settings.levels.index,function(data){
+			iJS.ajax(settings.levels.index,function(data){
 				var levels = JSON.parse(data) || false;
 				if(levels && levels.length){
 					for(var l=0;l<levels.length;l++){
@@ -176,7 +176,7 @@ ingenioJS.engine.prototype = {
 
 		if(level.objects){
 			// load level's objects
-			ingenioJS.ajax((settings.levels.base ? settings.levels.base+'/' : '') + level.objects,function(data){
+			iJS.ajax((settings.levels.base ? settings.levels.base+'/' : '') + level.objects,function(data){
 				var json = JSON.parse(data || '[]');
 				if(json.length > 0){
 					self.currentLevel.objects = json;
@@ -186,7 +186,7 @@ ingenioJS.engine.prototype = {
 
 		if(level.quests){
 			// load level's quests
-			ingenioJS.ajax((settings.levels.base ? settings.levels.base+'/' : '') + level.quests,function(data){
+			iJS.ajax((settings.levels.base ? settings.levels.base+'/' : '') + level.quests,function(data){
 				var json = JSON.parse(data || '[]');
 				if(json.length > 0){
 					self.currentLevel.quests = json;
@@ -347,17 +347,6 @@ ingenioJS.engine.prototype = {
 
 		if(this.settings.editable){
 
-			function removeLevelmapEntry (array, id){
-				var part1 = array.slice(0, id),
-					part2 = array.slice(id + 1, array.length);
-
-				array = [];
-				array.push.apply(array, part1);
-				array.push.apply(array, part2);
-
-				return array;
-			}
-
 			var removeId = false;
 			for(var i=0; i<this.levelmap.length; i++){
 				if(this.levelmap[i] == object){
@@ -367,7 +356,7 @@ ingenioJS.engine.prototype = {
 			}
 
 			if(removeId !== false){
-				this.levelmap = removeLevelmapEntry(this.levelmap, removeId);
+				this.levelmap = iJS.removeArrayEntry(this.levelmap, removeId);
 			}
 		}
 

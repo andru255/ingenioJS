@@ -192,20 +192,9 @@ ingenioJS.renderer.plugins.animation.prototype = {
 			todo = [ todo ];
 		}
 
-		function removeAnimationPart (array, id){
-			var part1 = array.slice(0, id),
-				part2 = array.slice(id + 1, array.length);
-
-			array = [];
-			array.push.apply(array, part1);
-			array.push.apply(array, part2);
-
-			return array;
-		}
-
 		for(var i=0; i<todo.length; i++){
 			var removeId = todo[i];
-			this._animatedObjects = removeAnimationPart(this._animatedObjects, removeId);
+			this._animatedObjects = iJS.removeArrayEntry(this._animatedObjects, removeId);
 		}
 
 	},

@@ -239,8 +239,6 @@ ingenioJS.renderer.prototype = {
 				context.removeChild(object.node);
 				object.node = undefined; // object's node is linked.
 				// Note: object itself is not linked.
-
-				continue;
 			}
 		}
 

@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+	<title>IngenioJS | Tests / CSS Flowchart</title>
+    <meta charset="utf-8" />
+	<link rel="stylesheet" href="./game/ui.css">
+
+	<style>
+
+	.flowchart{
+		position:relative;
+		width:800px;
+		height:600px;
+		background:grey;
+	}
+	.flowchart *{
+		position:absolute;
+		top:auto;
+		right:auto;
+		bottom:auto;
+		left:auto;
+	}
+	.flowchart *>*{
+		position:relative;
+	}
+
+	.flowchart .vector{
+		display:block;
+		width:200px;
+		height:4px;
+		background:#000;
+	}
+	.flowchart .vector>.head{
+		position:absolute;
+		width:40px;
+		height:40px;
+		border:0 none;
+	}
+
+	.flowchart .vector.right>.head{
+		right:-10px;
+		border-right:4px solid #000;
+		border-bottom:4px solid #000;
+		-webkit-transform:rotate(-45deg) translate(5px,-23px);
+	}
+	.flowchart .vector.left>.head{
+		left:-10px;
+		border-left:4px solid #000;
+		border-bottom:4px solid #000;
+		-webkit-transform:rotate(45deg) translate(-5px,-23px);
+	}
+
+	.flowchart .vector.top{
+		-webkit-transform:rotate(-90deg);
+	}
+	.flowchart .vector.bottom{
+		-webkit-transform:rotate(90deg);
+	}
+
+	.flowchart .object{
+		padding:20px 40px;
+		background:#fff;
+		border:1px solid #000;
+		border-radius:20px;
+	}
+	.flowchart .object h3{
+		margin:0;
+		padding:0;
+	}
+	</style>
+</head>
+<body>
+
+<!-- the html renderer viewport -->
+<div class="flowchart">
+	<div class="vector right" style="top:200px;left:20px"><div class="head"></div></div>
+
+	<div class="vector left" style="top:300px;left:20px"><div class="head"></div></div>
+
+
+	<div class="vector top right" style="top:300px;left:400px"><div class="head"></div></div>
+
+	<div class="vector top left" style="top:300px;left:500px"><div class="head"></div></div>
+
+	<div class="object" style="top:100px;left:400px"><h3>Engine</h3></div>
+</div>
+</body>
+</html>
