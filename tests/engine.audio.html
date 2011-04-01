@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+	<title>IngenioJS | Tests / Audio</title>
+    <meta charset="utf-8" />
+	<script>var ingenioJS = {}; ingenioJS.engine = {};</script>
+	<script src="../ingenioJS/engine.audio.js"></script>
+</head>
+<body>
+
+<h3>single stream test</h3>
+<button onclick="myStream.play('start')">start</button>
+<button onclick="myStream.pause()">pause</button>
+<button onclick="myStream.resume()">resume</button>
+<button onclick="myStream.stop()">stop</button>
+<button onclick="myStream.play('middle')">middle</button>
+<button onclick="myStream.play('middle2')">middleTwo</button>
+
+
+<script>
+
+var myStream = new ingenioJS.engine.audio({
+	"resources": [
+		"engine.audio-resource.mid",
+		"engine.audio-resource.ogg"
+	],
+	"autoplay": "true",
+	"loop": true,
+	"jumpmarks": {
+		"start": "0.00",
+		"middle": "30.00",
+		"middle2": "60.00"
+	}
+});
+</script>
+
+</body>
+</html>

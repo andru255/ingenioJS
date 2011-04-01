@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+	<title>IngenioJS | Tests / Audio</title>
+    <meta charset="utf-8" />
+	<script>var ingenioJS = {}; ingenioJS.engine = {};</script>
+	<script src="../ingenioJS/engine.audio.js"></script>
+</head>
+<body>
+
+<h3>multi stream test</h3>
+<div>
+	<h4>Stream 1 (autoplay=false)</h4>
+	<button onclick="myStreams[0].play('start')">start</button>
+	<button onclick="myStreams[0].pause()">pause</button>
+	<button onclick="myStreams[0].resume()">resume</button>
+	<button onclick="myStreams[0].stop()">stop</button>
+	<button onclick="myStreams[0].play('middle')">middle</button>
+	<button onclick="myStreams[0].play('middle2')">middleTwo</button>
+</div>
+<div>
+	<h4>Stream 2 (autoplay=true)</h4>
+	<button onclick="myStreams[1].play('start')">start</button>
+	<button onclick="myStreams[1].pause()">pause</button>
+	<button onclick="myStreams[1].resume()">resume</button>
+	<button onclick="myStreams[1].stop()">stop</button>
+	<button onclick="myStreams[1].play('middle')">middle</button>
+	<button onclick="myStreams[1].play('middle2')">middleTwo</button>
+</div>
+
+
+<script>
+var myStreams = new ingenioJS.engine.audio([{
+	"resources": [
+		"engine.audio-resource.mp3",
+		"engine.audio-resource.ogg"
+	],
+	"autoplay": false,
+	"loop": true,
+	"jumpmarks": {
+		"start": "0.00",
+		"middle": "30.00",
+		"middle2": "60.00"
+	}
+},{
+	"resources": [
+		"engine.audio-resource2.mp3",
+		"engine.audio-resource2.ogg"
+	],
+	"autoplay": true, // recognize that, dude! =)
+	"loop": true,
+	"jumpmarks": {
+		"start": "0.00",
+		"middle": "60.00",
+		"middle2": "90.00"
+	}
+}]);
+</script>
+
+</body>
+</html>
