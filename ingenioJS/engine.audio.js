@@ -146,21 +146,21 @@ ingenioJS.engine.audio.prototype = {
 /*
 			var self = this;
 			audio.addEventListener('loadedmetadata', function(){
-				// we can only here detect whether audio api extension is accessible.
-				// ... due to those fucking DOM Exceptions. Dude, that just sucks hard.
-				self.features['channels'] = (this.channels || this.mozChannels || this.webkitChannels) || 4;
+				// we can only detect the channels amount if we already loaded (and played) a stream.
+				// Dude, this crappy api sucks so hard =/
+				self.features['channels'] = (this.channels || this.mozChannels || this.webkitChannels) || 8;
 			}, true);
 */
 
 			// no on-demand detection using audio api extension conceptionated by Mozilla. see above.
-			this.features['channels'] = 4;
+			this.features['channels'] = 8;
 
 			// check if the browser supports the volume property
 			audio.volume=0.1;
 			this.features['volume'] = !!audio.volume.toString().match(/^0\.1/);
 
 			// hacky, but there's no method to detect that =/
-			if(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)){
+			if(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/MSIE 9.0/) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)){
 				this.features['channels'] = 1;
 			}
 
@@ -218,16 +218,25 @@ ingenioJS.engine.audio.prototype = {
 					// restart stream
 					if(stream._playing.loop === true){
 						var newPointer = stream._playing.start;
-						this.streams[s].stop();
-						this.streams[s].play(newPointer);
+						stream.stop();
+						stream.play(newPointer);
 					// stop stream
 					}else{
-						this.streams[s].stop();
+						stream.stop();
 					}
 
+				stream.locked = false;
+
 				// start stream, try & error due to dom exceptions for currentTime access
-				}else if(stream.context.currentTime < stream._playing.start){
-					this.streams[s].context.currentTime = stream._playing.start;
+				}else if(!stream.locked && stream.context.currentTime < stream._playing.start){
+					console.log('updating the currentTime now and locking stream');
+
+					try{
+						stream.context.currentTime = stream._playing.start;
+						stream.locked = true;
+					}catch(e){
+						stream.locked = false;
+					}
 
 					// TODO: This is required for iOS due to heavily slow implementation.
 					// Needs a fix or a different solution. above should check if !stream.locked
@@ -424,9 +433,9 @@ ingenioJS.engine.audio.prototype = {
 
 					try{
 						this.context.currentTime = jumpTo;
-						this.isReady = true;
+						this.locked = true;
 					}catch(e){
-						this.isReady = false;
+						this.locked = false;
 					}
 
 				}
@@ -446,9 +455,9 @@ ingenioJS.engine.audio.prototype = {
 
 					try{
 						this.context.currentTime = mark;
-						this.isReady = true;
+						this.locked = true;
 					}catch(e){
-						this.isReady = false;
+						this.locked = false;
 					}
 				}
 			}

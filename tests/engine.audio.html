@@ -13,6 +13,9 @@
 		color:white;
 		background:grey;
 	}
+	.footnote:target{
+		background:yellow;
+	}
 	</style>
 </head>
 <body>
@@ -51,6 +54,51 @@
 <div id="features"></div>
 <hr>
 <div id="debug"></div>
+
+
+<h3>This awesome Audio Engine was successfully tested (and worked fine) on:</h3>
+<table border="1">
+	<tr>
+		<th>-</th>
+		<th>Mobile</th>
+		<th>Desktop</th>
+	</tr>
+
+	<tr>
+		<td>Gecko</td>
+		<td>Firefox Mobile 4 (all Android devices)</td>
+		<td>Firefox 4 (Linux, Mac OSX, Windows)</td>
+	</tr>
+
+	<tr>
+		<td>Presto</td>
+		<td>Opera Mobile for Android (all Android devices)</td>
+		<td>Opera 11 (Linux, Mac OSX, Windows)</td>
+	</tr>
+
+	<tr>
+		<td>Trident</td>
+		<td>-</td>
+		<td>Internet Explorer 9 (Windows)<sup><a href="#fn2">*</a></sup></td>
+	</tr>
+
+	<tr>
+		<td rowspan="3">WebKit</td>
+		<td>Native Android Browser 2.3+ (Nexus S)<sup><a href="#fn1">*</a></sup></td>
+		<td>WebKit nightly rev83010 (Linux, Mac OSX, Windows)</td>
+	</tr>
+	<tr>
+		<td>iOS 4.3 (iPad, iPad2, iPod 3G, iPhone4)<sup><a href="#fn2">*</a></sup></td>
+		<td>Safari 5.0.4 (Mac OSX, Windows)</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>Chromium nightly 11.0+ (Linux, Mac OSX, Windows)</td>
+	</tr>
+
+</table>
+<p class="footnote" id="fn1">Android supports audio api since 2.x branch, but requires at least a codec implementation that is based on Apache/BSD license or a manufacturer-shipped codec.</p>
+<p class="footnote" id="fn2">iOS devices and Internet Explorer 9 both seems to support NO multiple streams in parallel playback</p>
 
 <script>
 function stopStreams(streams){
