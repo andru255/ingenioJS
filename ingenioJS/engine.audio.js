@@ -1,22 +1,10 @@
 
 /**
- * @constructor Engine / Audio Controller (allows playback and controls of audio and music)
- * @param {Object} controller The owning controller instance
- * @returns {Object} controller plugin instance
- * @todo Improve audio engine with multi-channel and multi-stream functionalities; Improve also a flash-using fallback
+ * @constructor Engine / Audio Controller (allows playback and controls of music/sound spritemaps using html5 audio api)
+ * @param {Array|Object} settings The settings array (for multiple streams) or the settings object for a single stream
+ * @returns {Array|Object} multiple streams will return an array, single stream will return the stream.
  */
 ingenioJS.engine.audio = function(settings, callback){
-
-	// defaults
-	/*
-	this.defaults = {
-		resources: false,
-		autoplay: false,
-		jumpmarks: {},
-		frequency: 10, // 40 will result in 40Hz, 22500 in 22.5kHz
-		loop: false
-	};
-	*/
 
 	if(settings.length){
 		this.settings = [];
@@ -70,7 +58,7 @@ ingenioJS.engine.audio.prototype = {
 		var newStream = {
 			context: stream.context.cloneNode(true),
 			type: stream.type,
-			jumpmarks: stream.jumpmarks
+			spritemap: stream.spritemap
 		};
 
 		// set flag that this is just a clone =)
@@ -139,46 +127,32 @@ ingenioJS.engine.audio.prototype = {
 				extension = undefined;
 			}
 
-			// set a flag if browser supports our audio api which is the prefered one
-			this.features['html5'] = this.features['aac'] || this.features['mp3'] || this.features['ogg'] || this.features['webm'] || false;
+			// set a flag if browser supports our required audio api and a by-standard-defined codec
+			this.features['html5audio'] = this.features['aac'] || this.features['mp3'] || this.features['ogg'] || this.features['webm'] || false;
 
-			// detect via audio api extension, default is 4
-/*
-			var self = this;
-			audio.addEventListener('loadedmetadata', function(){
-				// we can only detect the channels amount if we already loaded (and played) a stream.
-				// Dude, this crappy api sucks so hard =/
-				self.features['channels'] = (this.channels || this.mozChannels || this.webkitChannels) || 8;
-			}, true);
-*/
-
-			// no on-demand detection using audio api extension conceptionated by Mozilla. see above.
+			// default amount is 8 channels, tested and worked on all browsers. The more channels the laggier it gets =/
 			this.features['channels'] = 8;
 
 			// check if the browser supports the volume property
 			audio.volume=0.1;
 			this.features['volume'] = !!audio.volume.toString().match(/^0\.1/);
 
-			// hacky, but there's no method to detect that =/
-			if(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/MSIE 9.0/) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)){
+			// hacky, but there's no method to detect that these things are just crappy implementations =/
+			if(navigator.userAgent.match(/MSIE 9.0/) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)){
 				this.features['channels'] = 1;
 			}
 
 		}
 
-		// TODO: This needs to be detected somehow.
-		// this.features['embed'] = this.features['mid'] = this.features['midi'] = true;
-
 	},
 
 	_initLoop: function(){
 
-		this._initialized = true;
 		this._loopDelay = 100;
 
 		if(this.streams.length){
 
-			// automatically create streams for missing channels
+			// automatically create additional channels
 			var missingChannels = (this.features.channels - this.streams.length);
 			if(this.streams.length < missingChannels){
 				for(var i=0; i<missingChannels; i++){
@@ -186,15 +160,12 @@ ingenioJS.engine.audio.prototype = {
 				}
 			}
 
-			// TODO: find a dynamic way or set a flag if an html5 stream exists
-			if(this.streams[0].type == 'html5'){
-				// only html5 audio api requires sound loop and correction.
-				// required due to slow cpu and audio api implementations
-				var self = this;
-				self._loopId = window.setInterval(function(){
-					self._loop.apply(self);
-				}, self._loopDelay);
-			}
+			// html5 audio api requires sound loop and corrections due to slow (no-feedback-giving) implementations
+			var self = this;
+			self._loopId = window.setInterval(function(){
+				self._loop.apply(self);
+			}, self._loopDelay);
+
 		}
 
 	},
@@ -203,15 +174,22 @@ ingenioJS.engine.audio.prototype = {
 
 		var stream = undefined;
 
-		// walk through playing streams and stop or restart them if they are looped.
+		// walk through all streams and correct them if necessary
 		for(var s=0; s<this.streams.length; s++){
 
 			stream = this.streams[s];
 
-			// hacky, but it's like that.
-			stream._queue = this._queue;
+			// hacky, but it's like that. and it's faster, dunno =/
+			if(this._queue){
+				stream._queue = this._queue;
+			}
 
+
+
+
+			// stream corrections
 			if(stream._playing){
+
 				// stream seems to have finished playback
 				if(stream.context.currentTime >= stream._playing.end){
 
@@ -225,11 +203,11 @@ ingenioJS.engine.audio.prototype = {
 						stream.stop();
 					}
 
+				// unlock it
 				stream.locked = false;
 
-				// start stream, try & error due to dom exceptions for currentTime access
+				// start stream again, try & error due to dom exceptions for currentTime access
 				}else if(!stream.locked && stream.context.currentTime < stream._playing.start){
-					console.log('updating the currentTime now and locking stream');
 
 					try{
 						stream.context.currentTime = stream._playing.start;
@@ -238,46 +216,44 @@ ingenioJS.engine.audio.prototype = {
 						stream.locked = false;
 					}
 
-					// TODO: This is required for iOS due to heavily slow implementation.
-					// Needs a fix or a different solution. above should check if !stream.locked
-
-/*					try{
-						this.streams[s].context.currentTime = stream._playing.start;
-						this.streams[s].locked = true;
-					}catch(e){
-						this.streams[s].tries = this.streams[s].tries ? (this.streams[s].tries+1) : 1;
-						console.log(this.streams[s].tries); // randomly between 1000ms and 2500ms (only iOS!) are required for initializing the playback readiness
-					}
-*/
 				}
 
-			// use a free channel to play the file
-			}else if(!stream._playing && stream.isChannel && this._queue.length){
+			// use a free channel to play next queue item if there's a queue
+			// Hint: There's no queue when browser doesn't support multiple streams (see _detectFeatures())
+			}else if(this._queue && this._queue.length){
 
-				var mark = this._queue[0].mark,
-					loop = this._queue[0].loop;
+				if(!stream._playing && stream.isChannel){
 
-				// clean first queue entry
-				this._queue = this._queue.splice(1);
+					var to = this._queue[0].to,
+						loop = this._queue[0].loop;
 
-				stream.play(mark, loop);
+					// clean first queue entry
+					this._queue = this._queue.splice(1);
+
+					stream.play(to, loop);
+
+				}
 
 			}
-
 		}
 
 	},
 
 	/**
-	 * This function initializes the stream instance or multiple instances.
+	 * This function initializes the stream instances
 	 * @param {Array|Object} settings
-	 * @todo Allow multiple settings for checking on being an array - and then walking through it (otherwise settings = [settings])
 	 */
 	init: function(settings){
 
 		if(!this.streams){
 			this.streams = [];
+		}
+
+		// queue mode only available if browser supports multiple streams
+		if(this.features['channels'] > 1){
 			this._queue = [];
+		}else{
+			this._queue = false;
 		}
 
 		if(!settings.length){
@@ -285,6 +261,7 @@ ingenioJS.engine.audio.prototype = {
 		}
 
 		for(var s=0; s<settings.length; s++){
+
 			var set = settings[s],
 				stream = {};
 
@@ -300,65 +277,36 @@ ingenioJS.engine.audio.prototype = {
 					}
 				}
 
-			// stream has no playable media type
+			// stream has no playable media type, go to next stream settings
 			}else{
-				continue; // go to next stream settings
+				continue;
 			}
 
-			if(stream && stream.resource){
+			if(stream && stream.resource && this.features['html5audio']){
 
-				if(this.features['html5'] === true){
+				stream.context = new Audio();
+				stream.context.src = stream.resource;
 
-					// cache the type for later usage
-					stream.type = 'html5';
+				// old WebKit
+				stream.context.autobuffer = true;
+				// new WebKit
+				// stream.context.preload = 'auto';
+				stream.context.preload = true;
 
-					stream.context = new Audio();
-					stream.context.id = 'ingenioJS-audio-'+(this.streams.length + 1);
-					stream.context.src = stream.resource;
-
-					// old WebKit
-					stream.context.autobuffer = true;
-					// new WebKit
-					stream.context.preload = true;
-
-					if(set.autoplay){
-						stream.context.autoplay = true;
-					}
-
-					stream.context.preload = 'auto';
-
-					// DEBUGGING
-					// stream.context.setAttribute('controls', 'true');
-
-					// append the audio stream now
-					document.getElementsByTagName('body')[0].appendChild(stream.context);
-
-				}else if(this.features['embed'] === true){
-
-					stream.context = document.createElement('embed');
-					stream.context.id = 'ingenioJS-audio-'+(this.streams.length + 1);
-					stream.context.src = stream.resource;
-					stream.context.setAttribute('class', 'audio-stream');
-//					stream.context.setAttribute('type', stream.type );
-//					TODO: lookup mime type
-					stream.context.setAttribute('hidden' , 'true');
-
-					if(set.autoplay){
-						stream.context.setAttribute('autostart', 'true');
-					}
-
-					if(set.loop){
-						stream.context.setAttribute('loop', 'true');
-					}
-
-					// append the audio stream now
-					document.getElementsByTagName('body')[0].appendChild(stream.context);
-
+				if(set.autoplay){
+					stream.context.autoplay = true;
 				}
 
-				// cache the jumpmarks
-				if(typeof set.jumpmarks == 'object'){
-					stream.jumpmarks = set.jumpmarks;
+				// DEBUGGING
+				// stream.context.setAttribute('controls', 'true');
+
+				// DOM representation required for Android devices. Don't know why, but it's funny =D
+				// stream.context.id = 'ingenioJS-audio-'+(this.streams.length + 1);
+				// document.getElementsByTagName('body')[0].appendChild(stream.context);
+
+				// cache the spritemap
+				if(typeof set.spritemap == 'object'){
+					stream.spritemap = set.spritemap;
 				}
 
 				// attach the per-stream functionality
@@ -373,112 +321,90 @@ ingenioJS.engine.audio.prototype = {
 				this.streams.push(stream);
 
 			}
-
 		}
 
-		if(!this._initialized){
+
+		// initialize loop now, because streams should be ready.
+		if(!this._loopId){
 			this._initLoop();			
 		}
 
 	},
 
 	/**
-	 * This function plays a jump mark and is called directly on a stream.
-	 * It will move the current position of the played audio to a given jumpmark or to 0, also depending on the loop argument
-	 * @param {String} [mark] The jumpmark which was previously set while creating the engine.audio instance
-	 * @param {Boolean} [loop] Repeats the stream until loop is turned off or stop() was called.
+	 * This function plays a stream. It accepts either a spritemap entry's name or a direct seconds-based position value in the stream.
+	 * @param {Number|String} to The spritemap entry or the position value in seconds
 	 */
-	play: function(){
+	play: function(to){
 
-		var mark = false,
-			loop = false;
-
-		if(arguments[0] !== undefined){
-			mark = arguments[0];
-		}
-		if(arguments[1] !== undefined){
-			loop = arguments[1];
-		}
-
-		// create a queue entry
-		if(this._playing){
-			var queueEntry = { mark: mark, loop: loop, stream: this };
+		// create a queue entry if no context available or stream is busy
+		if(this._queue && (this._playing || !this.context)){
+			var queueEntry = { to: to, stream: this };
 			this._queue.push(queueEntry);
 			return;
 		}
 
-		// jumpmarks are only available for single-stream usage
-		if(mark && this.jumpmarks && this.jumpmarks[mark]){
-			var jumpTo = this.jumpmarks[mark].start,
-				tmp = [];
+		var position = undefined;
+
+		// play via spritemap position
+		if(to && this.spritemap && this.spritemap[to]){
+
+			position = this.spritemap[to].start;
 
 			// 1:20:10 -> 80.10
-			if(typeof jumpTo == 'string' && jumpTo.match(/:/)){
-				tmp = jumpTo.split(':');
-				jumpTo = parseInt(0,10); // integer required!
+			if(typeof position == 'string' && position.match(/:/)){
+				var tmp = position.split(':');
+				position = parseInt(0,10); // integer required!
 
 				tmp[0] = parseInt(tmp[0],10) * 60; // minutes
 				tmp[1] = parseInt(tmp[1],10); // seconds
 				tmp[2] = parseInt(tmp[2],10) / 60; // milliseconds (-> format: s.ms)
 
-				jumpTo += tmp[0] + tmp[1] + tmp[2];
+				position += tmp[0] + tmp[1] + tmp[2];
 			}
 
-			if(this.context && this.type == 'html5'){
-				if(!this._playing){
-					this.context.play();
+		// play via position number
+		}else if(typeof to == 'number'){
 
-					// cache the jumpmark's details for quick access
-					this._playing = this.jumpmarks[mark];
+			position = to;
 
-					try{
-						this.context.currentTime = jumpTo;
-						this.locked = true;
-					}catch(e){
-						this.locked = false;
-					}
-
+			// find matching spritemap entry
+			for(var s in this.spritemap){
+				if(position >= this.spritemap[s].start && position <= this.spritemap[s].end){
+					to = s;
+					break;
 				}
 			}
-		}else if(typeof mark == 'number'){
-			if(this.context && this.type == 'html5'){
-				if(!this._playing){
-					this.context.play();
 
-					// find the right jumpmark
-					for(var jm in this.jumpmarks){
-						if(mark >= this.jumpmarks[jm].start && mark <= this.jumpmarks[jm].end){
-							this._playing = this.jumpmarks[jm];
-							break;
-						}
-					}
+		}
 
-					try{
-						this.context.currentTime = mark;
-						this.locked = true;
-					}catch(e){
-						this.locked = false;
-					}
-				}
-			}
+		// return if we didn't find matching spritemap entry
+		if(position === undefined || !to) return;
+
+		this.context.play();
+
+		// cache the spritemap entry's details for quicker access
+		this._playing = this.spritemap[to];
+
+		// locking the stream due to slow reaction on mobile devices
+		try{
+			this.context.currentTime = position;
+			this.locked = true;
+		}catch(e){
+			this.locked = false;
 		}
 
 	},
 
 	/**
 	 * This function stops the playback of a stream.
-	 * It will reset the current position of the played audio stream.
+	 * It will reset the current position of the played audio stream to 0.
 	 */
 	stop: function(){
 
-		if(this.type == 'html5'){
-			this.lastPointer = 0; // reset pointer
-			this.context.pause();
-			this._playing = undefined;
-		}else if(this.type == 'embed'){
-			// TODO: Find out how "most" of the plugin APIs work
-			// Removing the attribute does nothing. That kinda sucks, dude.
-		}
+		this.lastPointer = 0; // reset pointer
+		this.context.pause();
+		this._playing = undefined;
 
 	},
 
@@ -488,9 +414,8 @@ ingenioJS.engine.audio.prototype = {
 	 */
 	pause: function(){
 
-		if(this.type == 'html5'){
-			this.lastPointer = this.context.currentTime && this.context.pause();
-		}
+		this.lastPointer = this.context.currentTime;
+		this.context.pause();
 
 	},
 
@@ -500,18 +425,12 @@ ingenioJS.engine.audio.prototype = {
 	 */
 	resume: function(){
 
-		if(this.type == 'html5'){
-
-			// only set play position in spritemap if we got a last pointer (set by pause())
-			if(this.lastPointer !== undefined){
-				this.play(this.lastPointer);
-				this.lastPointer = undefined;
-			}else{
-				this.context.play();
-			}
-
-		}else if(this.type == 'embed'){
-			// TODO: Find out how "most" of the plugin APIs work
+		// only set play position in spritemap if we got a last pointer (set by pause())
+		if(this.lastPointer !== undefined){
+			this.play(this.lastPointer);
+			this.lastPointer = undefined;
+		}else{
+			this.context.play();
 		}
 
 	}
