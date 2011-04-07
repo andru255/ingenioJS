@@ -6,6 +6,9 @@
  */
 ingenioJS.engine.audio = function(settings, callback){
 
+	// TODO: remove this
+	this._forceSingleChannel = false;
+
 	if(settings.length){
 		this.settings = [];
 		// overwrite defaults
@@ -52,29 +55,6 @@ ingenioJS.engine.audio = function(settings, callback){
 };
 
 ingenioJS.engine.audio.prototype = {
-
-	_createChannel: function(stream){
-
-		var newStream = {
-			context: stream.context.cloneNode(true),
-			type: stream.type,
-			spritemap: stream.spritemap
-		};
-
-		// set flag that this is just a clone =)
-		newStream.isChannel = true;
-
-		// attach the per-stream functionality
-		newStream.play = this.play;
-		newStream.stop = this.stop;
-		newStream.pause = this.pause;
-		newStream.resume = this.resume;
-
-		// streams have a link to the queue to influence _loop() behaviour
-		newStream._queue = this._queue;
-
-		return newStream;
-	},
 
 	_detectFeatures: function(){
 
@@ -138,7 +118,7 @@ ingenioJS.engine.audio.prototype = {
 			this.features['volume'] = !!audio.volume.toString().match(/^0\.1/);
 
 			// hacky, but there's no method to detect that these things are just crappy implementations =/
-			if(navigator.userAgent.match(/MSIE 9.0/) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)){
+			if(this._forceSingleChannel === true || navigator.userAgent.match(/MSIE 9.0/) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)){
 				this.features['channels'] = 1;
 			}
 
@@ -153,11 +133,29 @@ ingenioJS.engine.audio.prototype = {
 		if(this.streams.length){
 
 			// automatically create additional channels
-			var missingChannels = (this.features.channels - this.streams.length);
-			if(this.streams.length < missingChannels){
-				for(var i=0; i<missingChannels; i++){
-					this.streams.push(this._createChannel(this.streams[0]));
+			var originStreams = this.streams.length;
+
+			if(this.streams.length < this.features.channels){
+
+				while(this.streams.length < this.features.channels){
+					for(var s=0; s<originStreams; s++){
+
+						if(this.streams.length < this.features.channels){
+							var origin = this.streams[s];
+							var channel = new ingenioJS.engine.stream(origin.context.src, {
+								spritemap: origin.spritemap
+							});
+
+							// set flags for later usage
+							channel.isChannel = true;
+							channel.origin = s;
+
+							this.streams.push(channel);
+						}
+
+					}
 				}
+
 			}
 
 			// html5 audio api requires sound loop and corrections due to slow (no-feedback-giving) implementations
@@ -198,13 +196,11 @@ ingenioJS.engine.audio.prototype = {
 						var newPointer = stream._playing.start;
 						stream.stop();
 						stream.play(newPointer);
+
 					// stop stream
 					}else{
 						stream.stop();
 					}
-
-				// unlock it
-				stream.locked = false;
 
 				// start stream again, try & error due to dom exceptions for currentTime access
 				}else if(!stream.locked && stream.context.currentTime < stream._playing.start){
@@ -222,7 +218,8 @@ ingenioJS.engine.audio.prototype = {
 			// Hint: There's no queue when browser doesn't support multiple streams (see _detectFeatures())
 			}else if(this._queue && this._queue.length){
 
-				if(!stream._playing && stream.isChannel){
+				// find a matching channel for the queue entry
+				if(!stream._playing && stream.isChannel && stream.origin == this._queue[0].origin){
 
 					var to = this._queue[0].to,
 						loop = this._queue[0].loop;
@@ -263,7 +260,7 @@ ingenioJS.engine.audio.prototype = {
 		for(var s=0; s<settings.length; s++){
 
 			var set = settings[s],
-				stream = {};
+				resource = undefined;
 
 			// find playable media type in given resources
 			if(set.resources && set.resources.length){
@@ -272,7 +269,7 @@ ingenioJS.engine.audio.prototype = {
 						ext = ext[ext.length - 1];
 
 					if(ext && this.features[ext] === true){
-						stream.resource = set.resources[r];
+						resource = set.resources[r];
 						break;
 					}
 				}
@@ -282,38 +279,12 @@ ingenioJS.engine.audio.prototype = {
 				continue;
 			}
 
-			if(stream && stream.resource && this.features['html5audio']){
+			if(resource && this.features['html5audio']){
 
-				stream.context = new Audio();
-				stream.context.src = stream.resource;
+				// id for tracing channel origins
+				set.id = s;
 
-				// old WebKit
-				stream.context.autobuffer = true;
-				// new WebKit
-				// stream.context.preload = 'auto';
-				stream.context.preload = true;
-
-				if(set.autoplay){
-					stream.context.autoplay = true;
-				}
-
-				// DEBUGGING
-				// stream.context.setAttribute('controls', 'true');
-
-				// DOM representation required for Android devices. Don't know why, but it's funny =D
-				// stream.context.id = 'ingenioJS-audio-'+(this.streams.length + 1);
-				// document.getElementsByTagName('body')[0].appendChild(stream.context);
-
-				// cache the spritemap
-				if(typeof set.spritemap == 'object'){
-					stream.spritemap = set.spritemap;
-				}
-
-				// attach the per-stream functionality
-				stream.play = this.play;
-				stream.stop = this.stop;
-				stream.pause = this.pause;
-				stream.resume = this.resume;
+				var stream = new ingenioJS.engine.stream(resource, set);
 
 				// streams have a link to the queue to influence _loop() behaviour
 				stream._queue = this._queue;
@@ -329,7 +300,39 @@ ingenioJS.engine.audio.prototype = {
 			this._initLoop();			
 		}
 
-	},
+	}
+
+};
+
+ingenioJS.engine.stream = function(resource, settings){
+
+	// set an id to trace channel origins
+	this.id = settings.id;
+
+	this.context = new Audio();
+	this.context.src = resource;
+
+	// old WebKit
+	this.context.autobuffer = true;
+	// new WebKit
+	this.context.preload = true; // or "auto"
+
+	// cache the spritemap
+	if(typeof settings.spritemap == 'object'){
+		this.spritemap = settings.spritemap;
+	}
+
+	if(settings.autoplay === true){
+		this.context.autoplay = true;
+	}else if(this.spritemap[settings.autoplay]){
+		this.play(settings.autoplay);
+	}
+
+	return this;
+
+};
+
+ingenioJS.engine.stream.prototype = {
 
 	/**
 	 * This function plays a stream. It accepts either a spritemap entry's name or a direct seconds-based position value in the stream.
@@ -337,11 +340,16 @@ ingenioJS.engine.audio.prototype = {
 	 */
 	play: function(to){
 
-		// create a queue entry if no context available or stream is busy
-		if(this._queue && (this._playing || !this.context)){
-			var queueEntry = { to: to, stream: this };
-			this._queue.push(queueEntry);
+		// create a queue entry if stream is busy
+		if(this._queue && this._playing){
+
+			this._queue.push({
+				to: to,
+				origin: this.id
+			});
+
 			return;
+
 		}
 
 		var position = undefined;
@@ -405,6 +413,7 @@ ingenioJS.engine.audio.prototype = {
 		this.lastPointer = 0; // reset pointer
 		this.context.pause();
 		this._playing = undefined;
+		this.locked = false;
 
 	},
 
@@ -435,4 +444,4 @@ ingenioJS.engine.audio.prototype = {
 
 	}
 
-};
+}

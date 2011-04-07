@@ -121,6 +121,8 @@ var myStreams = new ingenioJS.engine.audio([{
 		"sound-spritemap.mp3",
 		"sound-spritemap.ogg"
 	],
+	"background": "bg-birds",
+	"autoplay": "chacofrog",
 	"spritemap": {
 		"bg-birds": {
 			"start": 0.00,
@@ -143,7 +145,7 @@ var myStreams = new ingenioJS.engine.audio([{
 		"chacofrog": {
 			"start": 81.00,
 			"end": 84.90 // crappy audio api says that the stream ends at 84.9760 instead of 85.00 as it does =/
-		},
+		}
 	}
 }], function(audioEngine){
 
@@ -165,7 +167,7 @@ window.setInterval(function(){
 
 	for(var i=0; i<myStreams.length; i++){
 		stream = myStreams[i];
-		debug.push('myStreams['+i+'] is a '+(stream.isChannel ? 'channel' : 'stream')+' and '+(stream._playing ? 'playing' : 'idling')+' at '+stream.context.currentTime);
+		debug.push('myStreams['+i+'] is a '+(stream.locked ? 'locked ' : ' ')+(stream.isChannel ? ('channel of '+stream.origin) : 'stream')+' and '+(stream._playing ? 'playing' : 'idling')+' at '+stream.context.currentTime);
 	}
 
 	document.getElementById('debug').innerHTML = debug.join('<br>');
