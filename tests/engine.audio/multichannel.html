@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+	<title>IngenioJS | Tests / Audio Engine / Multichannel</title>
+    <meta charset="utf-8" />
+
+	<script>var ingenioJS = {}; ingenioJS.engine = {};</script>
+	<script src="../../ingenioJS/engine.audio.js"></script>
+	<style>
+	#debug, #features{
+		width:98%;
+		padding:1%;
+		overflow-y:scroll;
+		color:white;
+		background:grey;
+	}
+	.footnote:target{
+		background:yellow;
+	}
+	</style>
+</head>
+<body>
+
+<h3>Audio Engine / Multichannel Test</h3>
+<div>
+
+	<strong>Start</strong>: (spritemap entries)
+	<button onclick="myStreams[0].play('bg-birds')">(looping) birds</button>
+	<button onclick="myStreams[0].play('cricket_chirp')">cricket chirp</button>
+	<button onclick="myStreams[0].play('dog_bark')">dog bark</button>
+	<button onclick="myStreams[0].play('bg-chacofrogs')">(looping) chaco frogs</button>
+	<button onclick="myStreams[0].play('chacofrog')">chaco frog</button>
+	<p>If a stream finds out that it isn't able to play a sound, it will delegate the work to the next free channel.</p>
+	<hr>
+
+	<strong>Stop</strong>:
+	<button onclick="stopStreams(myStreams)">stop all streams</button>
+	<hr>
+
+	<strong>Volume</strong>: (all streams)
+	<button onclick="volumeStreams(myStreams, 0.1)">0.1</button>
+	<button onclick="volumeStreams(myStreams, 0.5)">0.5</button>
+	<button onclick="volumeStreams(myStreams, 1.0)">1.0</button>
+
+	<br>
+	<strong>Volume</strong>: (first stream)
+	<button onclick="volumeStreams([myStreams[0]], 0.1)">0.1</button>
+	<button onclick="volumeStreams([myStreams[0]], 0.5)">0.5</button>
+	<button onclick="volumeStreams([myStreams[0]], 1.0)">1.0</button>
+	<button onclick="alert(myStreams[0].context.volume)">check value</button>
+	<p>This will manually set the volume directly on the context</p>
+	<hr>
+</div>
+
+<div id="features"></div>
+<hr>
+<div id="debug"></div>
+
+<script>
+function stopStreams(streams){
+	for(var i=0; i<streams.length; i++){
+		streams[i].stop();
+	}
+}
+
+function volumeStreams(streams, value){
+	for(var i=0; i<streams.length; i++){
+		if(streams[i].context){
+			streams[i].context.volume = value;
+		}
+	}
+}
+
+var myStreams = new ingenioJS.engine.audio([{
+	"resources": [
+//		"spritemap-forest.m4a", // buggy implementation on IE9, so preferred one is mp3
+		"spritemap-forest.mp3",
+		"spritemap-forest.ogg"
+	],
+//	"background": "bg-birds",
+//	"autoplay": "chacofrog",
+	"spritemap": {
+		"bg-birds": {
+			"start": 0.00,
+			"end": 40.00,
+			"loop": true
+		},
+		"cricket_chirp": {
+			"start": 41.00,
+			"end": 43.75
+		},
+		"dog_bark": {
+			"start": 45.00,
+			"end": 46.50
+		},
+		"bg-chacofrogs": {
+			"start": 50.00,
+			"end": 80.00,
+			"loop": true
+		},
+		"chacofrog": {
+			"start": 81.00,
+			"end": 84.90 // crappy audio api says that the stream ends at 84.9760 instead of 85.00 as it does =/
+		}
+	}
+}], function(audioEngine){
+
+	// the audioEngine itself is transparent, this is how you can access it's properties
+	var features = [];
+	for(var f in audioEngine.features){
+		features.push(f+' = '+audioEngine.features[f]);
+	}
+
+	document.getElementById('features').innerHTML = features.join('<br>');
+
+});
+
+// debug functionality for demo
+window.setInterval(function(){
+
+	var debug = [],
+		stream = undefined;
+
+	for(var i=0; i<myStreams.length; i++){
+		stream = myStreams[i];
+		debug.push('myStreams['+i+'] is a '+(stream.locked ? 'locked ' : ' ')+(stream.isChannel ? ('channel of '+stream.origin) : 'stream')+' and '+(stream._playing ? 'playing' : 'idling')+' at '+stream.context.currentTime);
+	}
+
+	document.getElementById('debug').innerHTML = debug.join('<br>');
+
+}, 200);
+
+</script>
+
+</body>
+</html>

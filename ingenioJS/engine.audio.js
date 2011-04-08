@@ -182,9 +182,6 @@ ingenioJS.engine.audio.prototype = {
 				stream._queue = this._queue;
 			}
 
-
-
-
 			// stream corrections
 			if(stream._playing){
 
