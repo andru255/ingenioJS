@@ -6,9 +6,6 @@
  */
 ingenioJS.engine.audio = function(settings, callback){
 
-	// TODO: remove this
-	this._forceSingleChannel = false;
-
 	if(settings.length){
 		this.settings = [];
 		// overwrite defaults
@@ -118,7 +115,7 @@ ingenioJS.engine.audio.prototype = {
 			this.features['volume'] = !!audio.volume.toString().match(/^0\.1/);
 
 			// hacky, but there's no method to detect that these things are just crappy implementations =/
-			if(this._forceSingleChannel === true || navigator.userAgent.match(/MSIE 9.0/) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)){
+			if(navigator.userAgent.match(/MSIE 9.0/) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)){
 				this.features['channels'] = 1;
 			}
 
@@ -301,6 +298,10 @@ ingenioJS.engine.audio.prototype = {
 
 };
 
+/*
+ * @constructor This will create a stream instance with given settings.
+ * @returns {Object} The created stream instance that contains the context, a spritemap and attached playback methods.
+ */
 ingenioJS.engine.stream = function(resource, settings){
 
 	// set an id to trace channel origins
