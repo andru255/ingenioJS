@@ -3,7 +3,6 @@
 <head>
 	<title>IngenioJS | Tests / Audio Engine / Multistream</title>
     <meta charset="utf-8" />
-	<script src="http://jsconsole.com/remote.js?796C4659-DCA8-4821-9A1D-34456F1CFFB4"></script>
 
 	<script>var ingenioJS = {}; ingenioJS.engine = {};</script>
 	<script src="../../ingenioJS/engine.audio.js"></script>
@@ -61,6 +60,7 @@
 <div id="debug"></div>
 
 <script>
+
 function stopStreams(streams){
 	for(var i=0; i<streams.length; i++){
 		streams[i].stop();
@@ -84,26 +84,26 @@ var myStreams = new ingenioJS.engine.audio([{
 	"autoplay": "chacofrog",
 	"spritemap": {
 		"bg-birds": {
-			"start": 0.00,
-			"end": 40.00,
+			"start": 1.00,
+			"end": 41.00,
 			"loop": true
 		},
 		"cricket_chirp": {
-			"start": 41.00,
-			"end": 43.75
+			"start": 42.00,
+			"end": 44.75
 		},
 		"dog_bark": {
-			"start": 45.00,
-			"end": 46.50
+			"start": 46.00,
+			"end": 47.50
 		},
 		"bg-chacofrogs": {
-			"start": 50.00,
-			"end": 80.00,
+			"start": 51.00,
+			"end": 81.00,
 			"loop": true
 		},
 		"chacofrog": {
-			"start": 81.00,
-			"end": 84.90 // crappy audio api says that the stream ends at 84.9760 instead of 85.00 as it does =/
+			"start": 82.00,
+			"end": 85.90 // crappy audio api says that the stream ends at 84.9760 instead of 85.00 as it does =/
 		}
 	}
 },{
@@ -120,7 +120,7 @@ var myStreams = new ingenioJS.engine.audio([{
 		},
 		"saxophone": {
 			"start": 330.00,
-			"end": 352.00 // it is de facto 353.00, but crappy audio api says different.
+			"end": 352.00 // see settings[0] (above)
 		}
 	}
 }], function(audioEngine){
