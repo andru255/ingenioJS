@@ -56,6 +56,7 @@ ingenioJS.engine.audio.prototype = {
 	_detectFeatures: function(){
 
 		this.features = {};
+		this.codecs = {};
 
 		var audio = window.Audio && new Audio();
 		if(audio && audio.canPlayType){
@@ -67,12 +68,12 @@ ingenioJS.engine.audio.prototype = {
 				// { e: 'avi', m: 'video/x-msvideo' }, // avi container allows pretty everything, impossible to detect -.-
 				{ e: 'aac', m: [ 'audio/aac', 'audio/aacp' ] },
 				{ e: 'amr', m: 'audio/amr' },
-				{ e: 'm4a', m: [ 'audio/mp4', 'audio/mpeg4', 'audio/mp4a-latm' ] },
-				{ e: 'mp3', m: [ 'audio/mp3', 'audio/mpeg' ] }, // mpeg was name for mp2 and mp3! avi container was mp4/m4a
-				{ e: 'mpga', m: [ 'audio/mpeg', 'video/mpeg' ] },
+				{ e: 'm4a', m: [ 'audio/mp4', 'audio/mp4; codecs="mp4a.40.2"', 'audio/mpeg4', 'audio/mpeg4-generic', 'audio/mp4a-latm', 'audio/MP4A-LATM', 'audio/x-m4a' ] },
+				{ e: 'mp3', m: [ 'audio/mp3', 'audio/mpeg', 'audio/mpeg; codecs="mp3"', 'audio/MPA', 'audio/mpa-robust' ] }, // mpeg was name for mp2 and mp3! avi container was mp4/m4a
+				{ e: 'mpga', m: [ 'audio/MPA', 'audio/mpa-robust', 'audio/mpeg', 'video/mpeg' ] },
 				{ e: 'mp4', m: 'video/mp4' },
 				{ e: 'ogg', m: [ 'application/ogg', 'audio/ogg', 'audio/ogg; codecs="theora, vorbis"', 'video/ogg', 'video/ogg; codecs="theora, vorbis"' ] },
-				{ e: 'wav', m: [ 'audio/wave', 'audio/wav', 'audio/x-wav', 'audio/x-pn-wav' ] },
+				{ e: 'wav', m: [ 'audio/wave', 'audio/wav', 'audio/wav; codecs="1"', 'audio/x-wav', 'audio/x-pn-wav' ] },
 				{ e: 'webm', m: [ 'audio/webm', 'video/webm' ] }
 			];
 
@@ -87,7 +88,7 @@ ingenioJS.engine.audio.prototype = {
 						mime = mimeList[m].m[mm];
 
 						if(audio.canPlayType(mime) != ""){
-							this.features[extension] = true;
+							this.codecs[extension] = mime;
 							break; // we found a supported codec for extension, so skip redundant checks
 						}
 					}
@@ -95,7 +96,7 @@ ingenioJS.engine.audio.prototype = {
 					mime = mimeList[m].m;
 
 					if(audio.canPlayType(mime) != ""){
-						this.features[extension] = true;
+						this.codecs[extension] = mime;
 					}
 				}
 
@@ -104,8 +105,8 @@ ingenioJS.engine.audio.prototype = {
 				extension = undefined;
 			}
 
-			// set a flag if browser supports our required audio api and a by-standard-defined codec
-			this.features['html5audio'] = this.features['aac'] || this.features['mp3'] || this.features['ogg'] || this.features['webm'] || false;
+			// browser supports html5 audio api theoretically, but depends on codec implementations
+			this.features['html5audio'] = true;
 
 			// default amount is 8 channels, tested and worked on all browsers. The more channels the laggier it gets =/
 			this.features['channels'] = 8;
@@ -225,6 +226,11 @@ ingenioJS.engine.audio.prototype = {
 
 				}
 
+			// we got a sucking audio api running on iOS =D
+			}else if(stream._background){
+				if(stream.context.currentTime >= stream._background.end){
+					stream._backgroundHackForiOS(true);
+				}
 			}
 		}
 
@@ -262,7 +268,7 @@ ingenioJS.engine.audio.prototype = {
 					var ext = set.resources[r].split('.');
 						ext = ext[ext.length - 1];
 
-					if(ext && this.features[ext] === true){
+					if(ext && !!this.codecs[ext]){
 						resource = set.resources[r];
 						break;
 					}
@@ -278,7 +284,8 @@ ingenioJS.engine.audio.prototype = {
 				// id for tracing channel origins
 				set.id = s;
 
-				var stream = new ingenioJS.engine.stream(resource, set);
+				// link features to let stream know if a _background has to be set
+				var stream = new ingenioJS.engine.stream(resource, set, this.features);
 
 				// streams have a link to the queue to influence _loop() behaviour
 				stream._queue = this._queue;
@@ -302,7 +309,7 @@ ingenioJS.engine.audio.prototype = {
  * @constructor This will create a stream instance with given settings.
  * @returns {Object} The created stream instance that contains the context, a spritemap and attached playback methods.
  */
-ingenioJS.engine.stream = function(resource, settings){
+ingenioJS.engine.stream = function(resource, settings, features){
 
 	// set an id to trace channel origins
 	this.id = settings.id;
@@ -320,10 +327,16 @@ ingenioJS.engine.stream = function(resource, settings){
 		this.spritemap = settings.spritemap;
 	}
 
-	if(settings.autoplay === true){
-		this.context.autoplay = true;
-	}else if(this.spritemap[settings.autoplay]){
-		this.play(settings.autoplay);
+
+	if(features && features.channels > 1){
+		if(settings.autoplay === true){
+			this.context.autoplay = true;
+		}else if(this.spritemap[settings.autoplay]){
+			this.play(settings.autoplay);
+		}
+	}else if(features && features.channels === 1 && this.spritemap[settings.autoplay]){
+		// only support autoplay as a spritemap entry for iOS devices
+		this._background = this.spritemap[settings.autoplay];
 	}
 
 	return this;
@@ -348,6 +361,10 @@ ingenioJS.engine.stream.prototype = {
 
 			return;
 
+		}else if(!this._playing && this._background){
+			if(!this._background.started){
+				this._background.started = (new Date()).getTime();
+			}
 		}
 
 		var position = undefined;
@@ -409,9 +426,27 @@ ingenioJS.engine.stream.prototype = {
 	stop: function(){
 
 		this.lastPointer = 0; // reset pointer
-		this.context.pause();
 		this._playing = undefined;
 		this.locked = false;
+
+		// is the background started already?
+		if(this._background && this._background.started){
+			// this._background.lastPointer = ( (new Date()).getTime() - this._background.started ) % ( this._background.end - this._background.start ) + this._background.start;
+			this._backgroundHackForiOS();
+		}else{
+			this.context.pause();
+		}
+
+	},
+
+	_backgroundHackForiOS: function(reset){
+
+		if(reset){
+			this.context.currentTime = this._background.start;
+		}else{
+			this._background.lastPointer = ( ( (new Date()).getTime() - this._background.started ) / 1000 ) % ( this._background.end - this._background.start ) + this._background.start;
+			this.context.currentTime = this._background.lastPointer;
+		}
 
 	},
 

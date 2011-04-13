@@ -7,7 +7,7 @@
 	<script>var ingenioJS = {}; ingenioJS.engine = {};</script>
 	<script src="../../ingenioJS/engine.audio.js"></script>
 	<style>
-	#debug, #features{
+	#debug, #features, #codecs{
 		width:98%;
 		padding:1%;
 		overflow-y:scroll;
@@ -78,6 +78,8 @@ function volumeStreams(streams, value){
 var myStreams = new ingenioJS.engine.audio([{
 	"resources": [
 //		"spritemap-forest.m4a", // buggy implementation on IE9, so preferred one is mp3
+//		"spritemap-forest.amr", // haha =D every phone supports 3gp / amr codec due to GSM voice encoding - just awesome!
+		"spritemap-forest.ac3",
 		"spritemap-forest.mp3",
 		"spritemap-forest.ogg"
 	],
@@ -109,29 +111,38 @@ var myStreams = new ingenioJS.engine.audio([{
 },{
 	"resources": [
 //		"spritemap-urban.m4a", // buggy implementation on IE9, so preferred one is mp3
+//		"spritemap-forest.amr", // haha =D every phone supports 3gp / amr codec due to GSM voice encoding - just awesome!
+		"spritemap-urban.ac3",
 		"spritemap-urban.mp3",
 		"spritemap-urban.ogg"
 	],
 	"spritemap": {
 		"bg-street": {
-			"start": 0.00,
-			"end": 325.00,
+			"start": 1.00,
+			"end": 326.00,
 			"loop": true
 		},
 		"saxophone": {
-			"start": 330.00,
-			"end": 352.00 // see settings[0] (above)
+			"start": 331.00,
+			"end": 353.00 // see settings[0] (above)
 		}
 	}
 }], function(audioEngine){
 
 	// the audioEngine itself is transparent, this is how you can access it's properties
-	var features = [];
+	var features = [],
+		codecs = [];
+
 	for(var f in audioEngine.features){
 		features.push(f+' = '+audioEngine.features[f]);
 	}
 
+	for(var f in audioEngine.codecs){
+		codecs.push(f+' = '+audioEngine.codecs[f]);
+	}
+
 	document.getElementById('features').innerHTML = features.join('<br>');
+	document.getElementById('codecs').innerHTML = codecs.join('<br>');
 
 });
 

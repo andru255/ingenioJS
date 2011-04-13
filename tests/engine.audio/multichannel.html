@@ -7,7 +7,7 @@
 	<script>var ingenioJS = {}; ingenioJS.engine = {};</script>
 	<script src="../../ingenioJS/engine.audio.js"></script>
 	<style>
-	#debug, #features{
+	#debug, #features, #codecs{
 		width:98%;
 		padding:1%;
 		overflow-y:scroll;
@@ -49,14 +49,22 @@
 	<button onclick="volumeStreams([myStreams[0]], 1.0)">1.0</button>
 	<button onclick="alert(myStreams[0].context.volume)">check value</button>
 	<p>This will manually set the volume directly on the context</p>
-	<hr>
+
 </div>
 
+<hr>
+<strong>Features</strong>
 <div id="features"></div>
+
+<hr>
+<strong>Codecs</strong>
+<div id="codecs"></div>
+
 <hr>
 <div id="debug"></div>
 
 <script>
+
 function stopStreams(streams){
 	for(var i=0; i<streams.length; i++){
 		streams[i].stop();
@@ -74,44 +82,53 @@ function volumeStreams(streams, value){
 var myStreams = new ingenioJS.engine.audio([{
 	"resources": [
 //		"spritemap-forest.m4a", // buggy implementation on IE9, so preferred one is mp3
+//		"spritemap-forest.amr", // haha =D every phone supports 3gp / amr codec due to GSM voice encoding - just awesome!
+		"spritemap-forest.ac3",
 		"spritemap-forest.mp3",
 		"spritemap-forest.ogg"
 	],
-//	"background": "bg-birds",
+	"autoplay": "bg-birds",
 //	"autoplay": "chacofrog",
 	"spritemap": {
 		"bg-birds": {
-			"start": 0.00,
-			"end": 40.00,
+			"start": 1.00,
+			"end": 41.00,
 			"loop": true
 		},
 		"cricket_chirp": {
-			"start": 41.00,
-			"end": 43.75
+			"start": 42.00,
+			"end": 44.75
 		},
 		"dog_bark": {
-			"start": 45.00,
-			"end": 46.50
+			"start": 46.00,
+			"end": 47.50
 		},
 		"bg-chacofrogs": {
-			"start": 50.00,
-			"end": 80.00,
+			"start": 51.00,
+			"end": 81.00,
 			"loop": true
 		},
 		"chacofrog": {
-			"start": 81.00,
-			"end": 84.90 // crappy audio api says that the stream ends at 84.9760 instead of 85.00 as it does =/
+			"start": 82.00,
+			"end": 85.90 // crappy audio api says that the stream ends at 84.9760 instead of 85.00 as it does =/
 		}
 	}
 }], function(audioEngine){
 
 	// the audioEngine itself is transparent, this is how you can access it's properties
-	var features = [];
+	var features = [],
+		codecs = [];
+
 	for(var f in audioEngine.features){
 		features.push(f+' = '+audioEngine.features[f]);
 	}
 
+	for(var f in audioEngine.codecs){
+		codecs.push(f+' = '+audioEngine.codecs[f]);
+	}
+
 	document.getElementById('features').innerHTML = features.join('<br>');
+	document.getElementById('codecs').innerHTML = codecs.join('<br>');
 
 });
 
