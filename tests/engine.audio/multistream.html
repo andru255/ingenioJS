@@ -52,15 +52,20 @@
 	<button onclick="volumeStreams([myStreams[0]], 1.0)">1.0</button>
 	<button onclick="alert(myStreams[0].context.volume)">check value</button>
 	<p>This will manually set the volume directly on the context</p>
-	<hr>
 </div>
 
+<hr>
+<strong>Features</strong>
 <div id="features"></div>
+
+<hr>
+<strong>Codecs</strong>
+<div id="codecs"></div>
+
 <hr>
 <div id="debug"></div>
 
 <script>
-
 function stopStreams(streams){
 	for(var i=0; i<streams.length; i++){
 		streams[i].stop();
@@ -83,7 +88,7 @@ var myStreams = new ingenioJS.engine.audio([{
 		"spritemap-forest.mp3",
 		"spritemap-forest.ogg"
 	],
-	"autoplay": "chacofrog",
+	"autoplay": "bg-birds",
 	"spritemap": {
 		"bg-birds": {
 			"start": 1.00,
@@ -116,6 +121,7 @@ var myStreams = new ingenioJS.engine.audio([{
 		"spritemap-urban.mp3",
 		"spritemap-urban.ogg"
 	],
+	"autoplay": "bg-street",
 	"spritemap": {
 		"bg-street": {
 			"start": 1.00,
